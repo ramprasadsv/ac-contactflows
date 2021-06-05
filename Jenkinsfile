@@ -13,15 +13,8 @@ pipeline {
     stages {
         stage('git repo & clean') {
             steps {
-                try { 
-                      sh(script:"rmdir  /s /q ac-contactflows", returnStdout: true)
-                } catch(Exception e1) {
-                   echo e1
-                }finally {
-                    println("The final block");
-                }
-                
-               sh(script:"git clone https://github.com/ramprasadsv/ac-contactflows.git", returnStdout: true)
+                   //sh(script:"rmdir  /s /q ac-contactflows", returnStdout: true)
+                   sh(script:"git clone https://github.com/ramprasadsv/ac-contactflows.git", returnStdout: true)
             }
         }
         stage('install') {
