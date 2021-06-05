@@ -23,6 +23,7 @@ pipeline {
                 echo 'Enabling S3 for storing scheduled reports'
                 withAWS(credentials: '71b568ab-3ca8-4178-b03f-c112f0fd5030', region: 'us-east-1') {
                     script {
+                        def jsonSlurper = new JsonSlurper()
                         data = jsonSlurper.parse(new File('./instance.json'))
                         echo data
                         def sc = Scheduled_Reports
