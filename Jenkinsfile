@@ -20,7 +20,8 @@ pipeline {
             steps {
                    sh(script:"rm -r ac-contactflows", returnStdout: true)
                    sh(script:"git clone https://github.com/ramprasadsv/ac-contactflows.git", returnStdout: true)
-                   sh(script:"ls -ltr", returnStdout: true)
+                   def s = sh(script:"ls -ltr", returnStdout: true)
+                   echo s
             }
         }
         stage('install') {
