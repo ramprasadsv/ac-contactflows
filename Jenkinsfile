@@ -37,10 +37,10 @@ pipeline {
                     // get workspacePath for the job Item
                         def workspacePath = jenkins.getWorkspaceFor (item)
                         println workspacePath           
-                        def jsonSlurper = new JsonSlurper()
+                        //def jsonSlurper = new JsonSlurper()
                         //data = jsonSlurper.parse(new File(workspacePath.toString()+"\\instance.json"))
-                        data = jsonSlurper.parse(new File("instance.json"))                        
-                        echo data
+                        //data = jsonSlurper.parse(new File("instance.json"))                        
+                        //echo data
                         def data2 = sh(script: 'cat instance.json', returnStdout: true).trim()
                         echo data2
                         def sc = Scheduled_Reports
