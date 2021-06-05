@@ -18,10 +18,12 @@ pipeline {
     stages {
         stage('git repo & clean') {
             steps {
-                   sh(script:"rm -r ac-contactflows", returnStdout: true)
-                   sh(script:"git clone https://github.com/ramprasadsv/ac-contactflows.git", returnStdout: true)
-                   def soutt = sh(script:"ls -ltr", returnStdout: true)
-                   echo soutt
+                   sh(script: "rm -r ac-contactflows", returnStdout: true)
+                   sh(script: "git clone https://github.com/ramprasadsv/ac-contactflows.git", returnStdout: true)
+                   def ret = sh(script: 'uname', returnStdout: true)
+                   println ret
+                   sh(script: "ls -ltr", returnStdout: true)
+                   
             }
         }
         stage('install') {
