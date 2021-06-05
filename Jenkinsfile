@@ -30,19 +30,19 @@ pipeline {
                 withAWS(credentials: '71b568ab-3ca8-4178-b03f-c112f0fd5030', region: 'us-east-1') {
                     script {
                     //get Jenkins instance
-                        def jenkins = Jenkins.instance
+                     //   def jenkins = Jenkins.instance
                     //get job Item
-                        def item = jenkins.getItemByFullName("The_JOB_NAME")
-                        println item
+                        //def item = jenkins.getItemByFullName("The_JOB_NAME")
+                        //println item
                     // get workspacePath for the job Item
-                        def workspacePath = jenkins.getWorkspaceFor (item)
-                        println workspacePath           
-                        //def jsonSlurper = new JsonSlurper()
-                        //data = jsonSlurper.parse(new File(workspacePath.toString()+"\\instance.json"))
-                        //data = jsonSlurper.parse(new File("instance.json"))                        
-                        //echo data
+                        //def workspacePath = jenkins.getWorkspaceFor (item)
+                        //println workspacePath           
                         def data2 = sh(script: 'cat instance.json', returnStdout: true).trim()
                         echo data2
+                        def jsonSlurper = new JsonSlurper()
+                        //data = jsonSlurper.parse(new File(workspacePath.toString()+"\\instance.json"))
+                        data = jsonSlurper.parse(new File("instance.json"))                        
+                        //echo data
                         def sc = Scheduled_Reports
                         sc = sc.replaceAll('Instance_Alias', Instance_Alias)
                         echo sc
