@@ -13,7 +13,11 @@ pipeline {
     stages {
         stage('git repo & clean') {
             steps {
-               sh(script:"rmdir  /s /q ac-contactflows", returnStdout: true)
+                try { 
+                      sh(script:"rmdir  /s /q ac-contactflows", returnStdout: true)
+                } catch(ExceptionName e1) {
+                   echo e1
+                }
                sh(script:"git clone https://github.com/ramprasadsv/ac-contactflows.git", returnStdout: true)
             }
         }
