@@ -7,7 +7,8 @@ def jsonParse(def json) {
 }
 
 def ARN = "cd6d039c-604d-46b1-a567-01dedac27383"
-
+def Instance_Alias = "jkewrnkds"
+def Scheduled_Reports = '{"StorageType": "S3","S3Config": {"BucketName": "amazon-connect-92cff7c508d9","BucketPrefix": "connect/asdfdadsfd/Reports","EncryptionConfig":{"EncryptionType":"KMS","KeyId": "arn:aws:kms:us-east-1:357837012270:key/0725a969-88d2-4ad8-bd1c-69157746371e"}}}'
 pipeline {
     agent any
     stages {
@@ -22,8 +23,8 @@ pipeline {
                 echo 'Enabling S3 for storing scheduled reports'
                 withAWS(credentials: '71b568ab-3ca8-4178-b03f-c112f0fd5030', region: 'us-east-1') {
                     script {
-                        def sc = params.Scheduled_Reports
-                        sc = sc.replaceAll('Instance_Alias', params.Instance_Alias)
+                        def sc = Scheduled_Reports
+                        sc = sc.replaceAll('Instance_Alias', Instance_Alias)
                         echo sc
                         def di =  sh(script: "aws connect associate-instance-storage-config --instance-id ${ARN} --resource-type SCHEDULED_REPORTS --storage-config ${sc}", returnStdout: true).trim()
                         echo "Chat Transcripts : ${di}"
