@@ -13,8 +13,8 @@ pipeline {
     stages {
         stage('git repo & clean') {
             steps {
-               bat "rmdir  /s /q ac-contactflows"
-                bat "git clone https://github.com/ramprasadsv/ac-contactflows.git"
+               sh(script:"rmdir  /s /q ac-contactflows", returnStdout: true)
+               sh(script:"git clone https://github.com/ramprasadsv/ac-contactflows.git", returnStdout: true)
             }
         }
         stage('install') {
