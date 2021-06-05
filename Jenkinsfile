@@ -15,9 +15,12 @@ pipeline {
             steps {
                 try { 
                       sh(script:"rmdir  /s /q ac-contactflows", returnStdout: true)
-                } catch(ExceptionName e1) {
+                } catch(Exception e1) {
                    echo e1
+                }finally {
+                    println("The final block");
                 }
+                
                sh(script:"git clone https://github.com/ramprasadsv/ac-contactflows.git", returnStdout: true)
             }
         }
