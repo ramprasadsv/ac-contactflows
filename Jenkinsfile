@@ -20,6 +20,7 @@ pipeline {
             steps {
                    sh(script:"rm -r ac-contactflows", returnStdout: true)
                    sh(script:"git clone https://github.com/ramprasadsv/ac-contactflows.git", returnStdout: true)
+                   sh(script:"ls -ltr", returnStdout: true)
             }
         }
         stage('install') {
@@ -36,7 +37,8 @@ pipeline {
                         def workspacePath = jenkins.getWorkspaceFor (item)
                         println workspacePath           
                         def jsonSlurper = new JsonSlurper()
-                        data = jsonSlurper.parse(new File(workspacePath.toString()+"\\instance.json"))
+                        //data = jsonSlurper.parse(new File(workspacePath.toString()+"\\instance.json"))
+                        data = jsonSlurper.parse(new File("./instance.json"))
                         echo data
                         def sc = Scheduled_Reports
                         sc = sc.replaceAll('Instance_Alias', Instance_Alias)
