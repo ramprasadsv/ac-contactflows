@@ -39,8 +39,10 @@ pipeline {
                         println workspacePath           
                         def jsonSlurper = new JsonSlurper()
                         //data = jsonSlurper.parse(new File(workspacePath.toString()+"\\instance.json"))
-                        data = jsonSlurper.parse(new File("./instance.json"))
+                        data = jsonSlurper.parse(new File("instance.json"))                        
                         echo data
+                        def data2 = readFile(file: 'instance.json')
+                        echo data2
                         def sc = Scheduled_Reports
                         sc = sc.replaceAll('Instance_Alias', Instance_Alias)
                         echo sc
