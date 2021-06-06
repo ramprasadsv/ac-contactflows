@@ -17,8 +17,9 @@ String TRAGETINSTANCEARN = "de1c040b-d1fe-4b12-b1e8-5e072329b86a"
 String TARGETFLOWID = "733b11b2-42ec-42c2-9d20-ae657bc6a1e7"
 String TARGETFLOWID2 = "082ffc0c-390f-4cd0-8480-231489f35618"
 String TARGETJSON = ""
-def PRIMARYLIST
-def TARGETLIST
+String PRIMARYLIST = ""
+String TARGETLIST = ""
+
 pipeline {
     agent any
     stages {
@@ -33,25 +34,13 @@ pipeline {
         
         stage('Primary instance') {
             steps {
-                echo "List all the flows in primary instance "
+                echo "List all the flows in both instance "
                 withAWS(credentials: '71b568ab-3ca8-4178-b03f-c112f0fd5030', region: 'us-east-1') {
                     script {
-                        def ti =  sh(script: "aws connect list-contact-flows --instance-id ${INSTANCEARN}", returnStdout: true).trim()
-                        echo ti
-                        PRIMARYLIST = jsonParse(ti)
-                    }
-                }
-            }
-        }
-        
-        stage('Secondary instance') {
-            steps {
-                echo "List all the flows in primary instance "
-                withAWS(credentials: '71b568ab-3ca8-4178-b03f-c112f0fd5030', region: 'us-east-1') {
-                    script {
-                        def si =  sh(script: "aws connect list-contact-flows --instance-id ${TRAGETINSTANCEARN}", returnStdout: true).trim()
-                        echo si
-                        TARGETLIST = jsonParse(si)
+                        PRIMARYLIST =  sh(script: "aws connect list-contact-flows --instance-id ${INSTANCEARN}", returnStdout: true).trim()
+                        echo PRIMARYLIST
+                        TARGETLIST =  sh(script: "aws connect list-contact-flows --instance-id ${TRAGETINSTANCEARN}", returnStdout: true).trim()
+                        echo TARGETLIST 
                     }
                 }
             }
@@ -62,10 +51,17 @@ pipeline {
                 echo "Identify the flows missing and create them"
                 withAWS(credentials: '71b568ab-3ca8-4178-b03f-c112f0fd5030', region: 'us-east-1') {
                     script {
-                        PRIMARYLIST.ContactFlowSummaryList.each {
+                        def pl = jsonParse(PRIMARYLIST)
+                        pl.ContactFlowSummaryList.each {
                             println "item: $it.Name"
                             println "item: $it.ContactFlowType"
                         }
+                        def tl = jsonParse(TARGETLIST)
+                        tl.ContactFlowSummaryList.each {
+                            println "item: $it.Name"
+                            println "item: $it.ContactFlowType"
+                        }
+                        
                     }
                 }
             }
