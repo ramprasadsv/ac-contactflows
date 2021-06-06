@@ -48,7 +48,7 @@ pipeline {
                         echo content                        
                         String json = toJSON(content)
                         echo json
-                        println json.getClass()
+                        println(json.getClass())
                         def di =  sh(script: "aws connect update-contact-flow-content --instance-id ${TRAGETINSTANCEARN} --contact-flow-id ${TARGETFLOWID} --content ${json}", returnStdout: true).trim()
                         echo di
                         
