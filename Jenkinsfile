@@ -12,7 +12,7 @@ def checkList(def flowName, targetList) {
     def tl = jsonParse(targetList)
     def flowFound = false
     println "checkList on $flowName"
-    for(i = 0; i < tl.ContactFlowSummaryList.size(); i++){
+    for(int i = 0; i < tl.ContactFlowSummaryList.size(); i++){
         def obj = tl.ContactFlowSummaryList[i]
         def fn = obj.Name
         if(flowName.equals(fn)) {
@@ -69,7 +69,7 @@ pipeline {
                         def pl = jsonParse(PRIMARYLIST)
                         int listSize = pl.ContactFlowSummaryList.size() 
                         println "Primary list size $listSize"
-                        for(i = 0; i < listSize; i++){
+                        for(int i = 0; i < listSize; i++){
                             def obj = pl.ContactFlowSummaryList[i]
                             println "Start comparing flow : $obj.Name of Type $obj.ContactFlowType"
                             String flowName = obj.Name
