@@ -1,4 +1,5 @@
 import groovy.json.JsonSlurper
+import groovy.json.JsonOutput; 
 
 @NonCPS
 def jsonParse(def json) {
@@ -40,8 +41,9 @@ pipeline {
                             println(content.indexOf(arnmapping[i].sourceARN, 1))
                             content = content.replaceAll(arnmapping[i].sourceARN, arnmapping[i].targetARN)
                         }
-                        content = content.replaceAll('"','\\"')
                         echo content                        
+                        def json = JsonOutput.toJson(content)
+                        echo json
                     }
                 }
             }
