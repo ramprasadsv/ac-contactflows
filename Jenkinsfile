@@ -34,9 +34,9 @@ pipeline {
                         //def flow = jsonParse(data)
                         def arnmapping = jsonParse(data2)
                         for(i = 0; i < arnmapping.size(); i++){
-                            println(arnmapping[i].sourceARN)
+                            data.replaceAll(arnmapping[i].sourceARN, arnmapping[i].targetARN)
                         }
-                        
+                        echo data                        
                     }
                 }
             }
