@@ -39,14 +39,14 @@ pipeline {
                         //println workspacePath           
                         def data2 = sh(script: 'cat instance.json', returnStdout: true).trim()
                         echo data2
-                        def jsonSlurper = new JsonSlurper()
+                        //def jsonSlurper = new JsonSlurper()
                         //data = jsonSlurper.parse(new File(workspacePath.toString()+"\\instance.json"))
-                        data = jsonSlurper.parse(new File("instance.json"))                        
+                        //data = jsonSlurper.parse(new File("instance.json"))                        
                         //echo data
                         def sc = Scheduled_Reports
                         sc = sc.replaceAll('Instance_Alias', Instance_Alias)
                         echo sc
-                        def di =  sh(script: "aws connect associate-instance-storage-config --instance-id ${ARN} --resource-type SCHEDULED_REPORTS --storage-config ${sc}", returnStdout: true).trim()
+                        def di =  sh(script: "aws connect associate-instance-storage-config --instance-id ${ARN} --resource-type SCHEDULED_REPORTS --storage-config ${data2}", returnStdout: true).trim()
                         echo "Chat Transcripts : ${di}"
                     }
                 }
