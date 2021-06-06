@@ -8,8 +8,8 @@ def jsonParse(def json) {
 def toJSON(def json) {
     new groovy.json.JsonOutput().toJson(json)
 }
-def checkList(def flowName) {
-    def tl = jsonParse(TARGETLIST)
+def checkList(def flowName, targetList) {
+    def tl = jsonParse(targetList)
     def flowFound = false
     println "checkList on $flowName"
     for(i = 0; i < tl.ContactFlowSummaryList.size(); i++){
@@ -73,7 +73,7 @@ pipeline {
                             String flowName = obj.Name
                             String flowType = obj.ContactFlowType
                             String flowId = obj.Id
-                            boolean flowFound = checkList(flowName)
+                            boolean flowFound = checkList(flowName, TARGETLIST)
                             if(flowFound == false) {
                                withAWS(credentials: '71b568ab-3ca8-4178-b03f-c112f0fd5030', region: 'us-east-1') {
                                    script {
