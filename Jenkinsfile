@@ -52,7 +52,7 @@ pipeline {
                 echo "Identify the flows missing and create them"
                 withAWS(credentials: '71b568ab-3ca8-4178-b03f-c112f0fd5030', region: 'us-east-1') {
                     script {
-                        PRIMARYLIST.items.each {
+                        PRIMARYLIST.ContactFlowSummaryList.each {
                             println "item: $it.Name"
                             println "item: $it.ContactFlowType"
                         }
