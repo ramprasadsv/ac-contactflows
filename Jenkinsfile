@@ -67,7 +67,9 @@ pipeline {
                 withAWS(credentials: '71b568ab-3ca8-4178-b03f-c112f0fd5030', region: 'us-east-1') {
                     script {
                         def pl = jsonParse(PRIMARYLIST)
-                        for(i = 0; i < pl.ContactFlowSummaryList.size(); i++){
+                        int listSize = pl.ContactFlowSummaryList.size() 
+                        println "Primary list size $listSize"
+                        for(i = 0; i < listSize; i++){
                             def obj = pl.ContactFlowSummaryList[i]
                             println "Start comparing flow : $obj.Name of Type $obj.ContactFlowType"
                             String flowName = obj.Name
