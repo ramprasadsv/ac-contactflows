@@ -9,11 +9,15 @@ def toJSON(def json) {
     new groovy.json.JsonOutput().toJson(json)
 }
 def CONTACTFLOW = ""
+
 def INSTANCEARN = "662de594-7bab-4713-952b-2b4cb16f2724"
 def FLOWID = "3b0db24a-c113-4847-8857-113c2c064131"
+
 String TRAGETINSTANCEARN = "de1c040b-d1fe-4b12-b1e8-5e072329b86a"
 String TARGETFLOWID = "733b11b2-42ec-42c2-9d20-ae657bc6a1e7"
+String TARGETFLOWID2 = "082ffc0c-390f-4cd0-8480-231489f35618"
 String TARGETJSON = ""
+
 pipeline {
     agent any
     stages {
@@ -25,14 +29,11 @@ pipeline {
                    
             }
         }
-        stage('read contact flow') {
+        stage('read flow from git') {
             steps{
                 echo 'Reading the contact flow content '
                 withAWS(credentials: '71b568ab-3ca8-4178-b03f-c112f0fd5030', region: 'us-east-1') {
                     script {
-                        //def di =  sh(script: "aws connect describe-contact-flow --instance-id ${INSTANCEARN} --contact-flow-id ${FLOWID}", returnStdout: true).trim()
-                        //echo di
-                        //def data2 = sh(script: 'cat contactflow.json', returnStdout: true).trim()    
                         def data = sh(script: 'cat a-test1.json', returnStdout: true).trim()    
                         echo data
                         def data2 = sh(script: 'cat arnmapping.json', returnStdout: true).trim()    
@@ -56,9 +57,9 @@ pipeline {
                 }
             }
         }
-        stage('update contact flow') {
+        stage('update flow from git') {
             steps {
-                echo "Testing "
+                echo "updating flow content after reading from git "
                 withAWS(credentials: '71b568ab-3ca8-4178-b03f-c112f0fd5030', region: 'us-east-1') {
                     script {
                         def di =  sh(script: "aws connect update-contact-flow-content --instance-id ${TRAGETINSTANCEARN} --contact-flow-id ${TARGETFLOWID} --content ${TARGETJSON}", returnStdout: true).trim()
@@ -67,10 +68,45 @@ pipeline {
                 }
             }
         }
-        stage('end') {
+        stage('read flow from api') {
             steps {
-                echo "Completed "
+                    echo 'Reading the contact flow content via api'
+                    withAWS(credentials: '71b568ab-3ca8-4178-b03f-c112f0fd5030', region: 'us-east-1') {
+                        script {
+                            def di =  sh(script: "aws connect describe-contact-flow --instance-id ${INSTANCEARN} --contact-flow-id ${FLOWID}", returnStdout: true).trim()
+                            echo di
+                            def data2 = sh(script: 'cat arnmapping.json', returnStdout: true).trim()    
+                            echo data2
+                            def flow = jsonParse(di)
+                            def arnmapping = jsonParse(data2)
+                            String content = flow.ContactFlow.Content    
+                            echo content
+                            for(i = 0; i < arnmapping.size(); i++){
+                                echo "Checking on ARN : ${arnmapping[i].sourceARN}"
+                                println(content.indexOf(arnmapping[i].sourceARN, 1))
+                                content = content.replaceAll(arnmapping[i].sourceARN, arnmapping[i].targetARN)
+                            }
+                            echo content                        
+                            String json = toJSON(content)
+                            echo json.toString()
+                            println( json.getClass() )
+                            TARGETJSON = json.toString()
+
+                     }
+                }
             }
         }
+        stage('update flow after api') {
+            steps {
+                echo "Updating contact flow after reading from api "
+                withAWS(credentials: '71b568ab-3ca8-4178-b03f-c112f0fd5030', region: 'us-east-1') {
+                    script {
+                        def di =  sh(script: "aws connect update-contact-flow-content --instance-id ${TRAGETINSTANCEARN} --contact-flow-id ${TARGETFLOWID2} --content ${TARGETJSON}", returnStdout: true).trim()
+                        echo di
+                    }
+                }
+            }
+        }
+        
     }
 }
