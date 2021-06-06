@@ -34,7 +34,7 @@ pipeline {
                         def flow = jsonParse(data)
                         def arnmapping = jsonParse(data2)
                         def content = flow.ContactFlow.Content    
-                        echo content
+                        echo content.Version
                         for(i = 0; i < arnmapping.size(); i++){
                             echo "Checking on ARN : ${arnmapping[i].sourceARN}"
                             content.replaceAll(arnmapping[i].sourceARN, arnmapping[i].targetARN)
