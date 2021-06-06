@@ -76,7 +76,8 @@ pipeline {
                             boolean flowFound = checkList(flowName, TARGETLIST)
                             if(flowFound == false) {
                                println "Missing flow $flowName of type : $flowType"
-                               def di =  sh(script: "aws connect describe-contact-flow --instance-id ${INSTANCEARN} --contact-flow-id ${flowId}", returnStdout: true).trim()
+                               def arn = INSTANCEARN
+                               def di =  sh(script: "aws connect describe-contact-flow --instance-id ${arn} --contact-flow-id ${flowId}", returnStdout: true).trim()
                                echo di 
                             }
                         }
