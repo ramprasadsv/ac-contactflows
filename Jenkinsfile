@@ -44,7 +44,7 @@ pipeline {
                             content = content.replaceAll(arnmapping[i].sourceARN, arnmapping[i].targetARN)
                         }
                         echo content                        
-                        def json = JsonOutput.toJson(content)
+                        String json = JsonOutput.toJson(content)
                         echo json
                         def di =  sh(script: "aws connect update-contact-flow-content --instance-id ${TRAGETINSTANCEARN} --contact-flow-id ${TARGETFLOWID} --content ${json}", returnStdout: true).trim()
                         echo di
