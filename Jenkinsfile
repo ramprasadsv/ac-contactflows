@@ -57,7 +57,7 @@ pipeline {
                 }
             }
         }
-        stage('update flow from git') {
+        stage('deploy flow after reading from git') {
             steps {
                 echo "updating flow content after reading from git "
                 withAWS(credentials: '71b568ab-3ca8-4178-b03f-c112f0fd5030', region: 'us-east-1') {
@@ -76,33 +76,42 @@ pipeline {
                             def di =  sh(script: "aws connect describe-contact-flow --instance-id ${INSTANCEARN} --contact-flow-id ${FLOWID}", returnStdout: true).trim()
                             echo di
                             def data2 = sh(script: 'cat arnmapping.json', returnStdout: true).trim()    
-                            echo data2
                             def flow = jsonParse(di)
                             def arnmapping = jsonParse(data2)
                             String content = flow.ContactFlow.Content    
-                            echo content
                             for(i = 0; i < arnmapping.size(); i++){
-                                echo "Checking on ARN : ${arnmapping[i].sourceARN}"
-                                println(content.indexOf(arnmapping[i].sourceARN, 1))
                                 content = content.replaceAll(arnmapping[i].sourceARN, arnmapping[i].targetARN)
                             }
-                            echo content                        
                             String json = toJSON(content)
-                            echo json.toString()
-                            println( json.getClass() )
                             TARGETJSON = json.toString()
-
                      }
                 }
             }
         }
-        stage('update flow after api') {
+        
+        stage('deploy updated flow after api') {
             steps {
                 echo "Updating contact flow after reading from api "
                 withAWS(credentials: '71b568ab-3ca8-4178-b03f-c112f0fd5030', region: 'us-east-1') {
                     script {
                         def di =  sh(script: "aws connect update-contact-flow-content --instance-id ${TRAGETINSTANCEARN} --contact-flow-id ${TARGETFLOWID2} --content ${TARGETJSON}", returnStdout: true).trim()
                         echo di
+                    }
+                }
+            }
+        }
+        
+        
+        stage('resolve missing contact flows') {
+            steps {
+                echo "List all the flows in both instances "
+                withAWS(credentials: '71b568ab-3ca8-4178-b03f-c112f0fd5030', region: 'us-east-1') {
+                    script {
+                        def ti =  sh(script: "aws connect list-contact-flows --instance-id ${INSTANCEARN}", returnStdout: true).trim()
+                        echo ti
+                        def si =  sh(script: "aws connect list-contact-flows --instance-id ${TRAGETINSTANCEARN}", returnStdout: true).trim()
+                        echo si
+                        
                     }
                 }
             }
