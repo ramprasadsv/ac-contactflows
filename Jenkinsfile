@@ -53,13 +53,26 @@ pipeline {
                     script {
                         def pl = jsonParse(PRIMARYLIST)
                         pl.ContactFlowSummaryList.each {
-                            println "item: $it.Name"
-                            println "item: $it.ContactFlowType"
-                        }
-                        def tl = jsonParse(TARGETLIST)
-                        tl.ContactFlowSummaryList.each {
-                            println "item: $it.Name"
-                            println "item: $it.ContactFlowType"
+                            println "Checking flow : $it.Name of Type $it.ContactFlowType"
+                            def flowName = $it.Name
+                            def flowType = $it.ContactFlowType
+                            def flowId = $it.Id
+                            def tl = jsonParse(TARGETLIST)
+                            def flowFound = false
+                            tl.ContactFlowSummaryList.each {
+                                if(flowName === $it.Name) {
+                                    flowFound = true
+                                    println "Found the flow $flowName"
+                                }
+                            }
+                            if(flowFound === false) {
+                               withAWS(credentials: '71b568ab-3ca8-4178-b03f-c112f0fd5030', region: 'us-east-1') {
+                                   script {
+                                        def di =  sh(script: "aws connect describe-contact-flow --instance-id ${INSTANCEARN} --contact-flow-id ${flowId}", returnStdout: true).trim()
+                                        echo di
+                                    }
+                                }
+                            }
                         }
                         
                     }
