@@ -1,18 +1,13 @@
 import groovy.json.JsonSlurper
-import java.util.Map
-import jenkins.*
-import jenkins.model.*
-import hudson.*
-import hudson.model.* 
 
 @NonCPS
 def jsonParse(def json) {
     new groovy.json.JsonSlurper().parseText(json)
 }
 
-def ARN = "662de594-7bab-4713-952b-2b4cb16f2724"
-def Instance_Alias = "jkewrnkds"
-def Scheduled_Reports = '{"StorageType": "S3","S3Config": {"BucketName": "amazon-connect-92cff7c508d9","BucketPrefix": "connect/asdfdadsfd/Reports","EncryptionConfig":{"EncryptionType":"KMS","KeyId": "arn:aws:kms:us-east-1:357837012270:key/0725a969-88d2-4ad8-bd1c-69157746371e"}}}'
+def CONTACTFLOW = ""
+def INSTANCEARN = "662de594-7bab-4713-952b-2b4cb16f2724"
+def FLOWID = "3b0db24a-c113-4847-8857-113c2c064131"
 pipeline {
     agent any
     stages {
@@ -24,42 +19,26 @@ pipeline {
                    
             }
         }
-        stage('install') {
+        stage('read contact flow') {
             steps{
-                echo 'Enabling S3 for storing scheduled reports'
+                echo 'Reading the contact flow content '
                 withAWS(credentials: '71b568ab-3ca8-4178-b03f-c112f0fd5030', region: 'us-east-1') {
                     script {
-                    //get Jenkins instance
-                     //   def jenkins = Jenkins.instance
-                    //get job Item
-                        //def item = jenkins.getItemByFullName("The_JOB_NAME")
-                        //println item
-                    // get workspacePath for the job Item
-                        //def workspacePath = jenkins.getWorkspaceFor (item)
-                        //println workspacePath           
-                        def data2 = sh(script: 'cat instance.json', returnStdout: true).trim()
-                        echo data2
-                        //def jsonSlurper = new JsonSlurper()
-                        //data = jsonSlurper.parse(new File(workspacePath.toString()+"\\instance.json"))
-                        //data = jsonSlurper.parse(new File("instance.json"))                        
-                        //echo data
-                        def sc = Scheduled_Reports
-                        sc = sc.replaceAll('Instance_Alias', Instance_Alias)
-                        echo sc
-                        def di =  sh(script: "aws connect associate-instance-storage-config --instance-id ${ARN} --resource-type SCHEDULED_REPORTS --storage-config ${data2}", returnStdout: true).trim()
-                        echo "Chat Transcripts : ${di}"
+                        def di =  sh(script: "aws connect describe-contact-flow --instance-id ${INSTANCEARN} --contact-flow-id ${FLOWID}", returnStdout: true).trim()
+                        echo di
+                        //def data2 = sh(script: 'cat contactflow.json', returnStdout: true).trim()    
                     }
                 }
             }
         }
-        stage('test') {
+        stage('update contact flow') {
             steps {
                 echo "Testing "
             }
         }
-        stage('package') {
+        stage('end') {
             steps {
-                echo "Package "
+                echo "Completed "
             }
         }
     }
