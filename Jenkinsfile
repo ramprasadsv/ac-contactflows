@@ -40,7 +40,7 @@ pipeline {
                             println(content.indexOf(arnmapping[i].sourceARN, 1))
                             content = content.replaceAll(arnmapping[i].sourceARN, arnmapping[i].targetARN)
                         }
-                        content = content.replaceAll(""","\\"")
+                        content = content.replaceAll('"','\\"')
                         echo content                        
                     }
                 }
