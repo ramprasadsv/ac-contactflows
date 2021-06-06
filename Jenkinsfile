@@ -60,12 +60,12 @@ pipeline {
                             def tl = jsonParse(TARGETLIST)
                             def flowFound = false
                             tl.ContactFlowSummaryList.each {
-                                if(flowName === $it.Name) {
+                                if(flowName.equals($it.Name)) {
                                     flowFound = true
                                     println "Found the flow $flowName"
                                 }
                             }
-                            if(flowFound === false) {
+                            if(flowFound == false) {
                                withAWS(credentials: '71b568ab-3ca8-4178-b03f-c112f0fd5030', region: 'us-east-1') {
                                    script {
                                         def di =  sh(script: "aws connect describe-contact-flow --instance-id ${INSTANCEARN} --contact-flow-id ${flowId}", returnStdout: true).trim()
