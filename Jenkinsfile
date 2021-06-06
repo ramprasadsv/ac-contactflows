@@ -33,11 +33,10 @@ pipeline {
                         echo data2
                         //def flow = jsonParse(data)
                         def arnmapping = jsonParse(data2)
-                        list.each { k, v ->
-                            //data = data.replaceAll(it.sourceARN, it.targetARN)
-                            println k
+                        for(i = 0; i < arnmapping.size(); i++){
+                            println(arnmapping[i].sourceARN)
                         }
-                        echo data
+                        
                     }
                 }
             }
