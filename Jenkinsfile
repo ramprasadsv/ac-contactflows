@@ -38,7 +38,7 @@ pipeline {
                         for(i = 0; i < arnmapping.size(); i++){
                             echo "Checking on ARN : ${arnmapping[i].sourceARN}"
                             println(content.indexOf(arnmapping[i].sourceARN, 1))
-                            content.replaceAll(arnmapping[i].sourceARN, arnmapping[i].targetARN)
+                            content = content.replaceAll(arnmapping[i].sourceARN, arnmapping[i].targetARN)
                         }
                         echo content                        
                     }
