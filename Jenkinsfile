@@ -46,8 +46,9 @@ pipeline {
                         echo content                        
                         String json = JsonOutput.toJson(content)
                         echo json
-                        def di =  sh(script: "aws connect update-contact-flow-content --instance-id ${TRAGETINSTANCEARN} --contact-flow-id ${TARGETFLOWID} --content ${json}", returnStdout: true).trim()
-                        echo di
+                        sh(script: "aws connect update-contact-flow-content --instance-id ${TRAGETINSTANCEARN} --contact-flow-id ${TARGETFLOWID} --content ${json}", returnStdout: true).trim()
+                        //def di =  sh(script: "aws connect update-contact-flow-content --instance-id ${TRAGETINSTANCEARN} --contact-flow-id ${TARGETFLOWID} --content ${json}", returnStdout: true).trim()
+                        //echo di
                         
                     }
                 }
