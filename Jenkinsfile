@@ -10,7 +10,7 @@ def jsonParse(def json) {
     new groovy.json.JsonSlurper().parseText(json)
 }
 
-def ARN = "cd6d039c-604d-46b1-a567-01dedac27383"
+def ARN = "662de594-7bab-4713-952b-2b4cb16f2724"
 def Instance_Alias = "jkewrnkds"
 def Scheduled_Reports = '{"StorageType": "S3","S3Config": {"BucketName": "amazon-connect-92cff7c508d9","BucketPrefix": "connect/asdfdadsfd/Reports","EncryptionConfig":{"EncryptionType":"KMS","KeyId": "arn:aws:kms:us-east-1:357837012270:key/0725a969-88d2-4ad8-bd1c-69157746371e"}}}'
 pipeline {
