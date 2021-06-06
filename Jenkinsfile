@@ -6,7 +6,7 @@ def jsonParse(def json) {
     new groovy.json.JsonSlurper().parseText(json)
 }
 def toJSON(def json) {
-    new groovy.json.JsonOutput.toJson(json)
+    new groovy.json.JsonOutput().toJson(json)
 }
 def CONTACTFLOW = ""
 def INSTANCEARN = "662de594-7bab-4713-952b-2b4cb16f2724"
