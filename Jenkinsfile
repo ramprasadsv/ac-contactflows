@@ -36,6 +36,7 @@ pipeline {
                         def content = flow.ContactFlow.Content    
                         echo content
                         for(i = 0; i < arnmapping.size(); i++){
+                            echo "Checking on ARN : ${arnmapping[i].sourceARN}"
                             content.replaceAll(arnmapping[i].sourceARN, arnmapping[i].targetARN)
                         }
                         echo content                        
