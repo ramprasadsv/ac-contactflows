@@ -11,6 +11,7 @@ def toJSON(def json) {
 def checkList(def flowName) {
     def tl = jsonParse(TARGETLIST)
     def flowFound = false
+    println "checkList on $flowName"
     for(i = 0; i < tl.ContactFlowSummaryList.size(); i++){
         def obj = tl.ContactFlowSummaryList[i]
         def fn = obj.Name
@@ -68,10 +69,10 @@ pipeline {
                         def pl = jsonParse(PRIMARYLIST)
                         pl.ContactFlowSummaryList.each {
                             println "Checking flow : $it.Name of Type $it.ContactFlowType"
-                            def flowName = $it.Name
-                            def flowType = $it.ContactFlowType
-                            def flowId = $it.Id
-                            def flowFound = checkList(flowName)
+                            String flowName = $it.Name
+                            String flowType = $it.ContactFlowType
+                            String flowId = $it.Id
+                            boolean flowFound = checkList(flowName)
                             if(flowFound == false) {
                                withAWS(credentials: '71b568ab-3ca8-4178-b03f-c112f0fd5030', region: 'us-east-1') {
                                    script {
