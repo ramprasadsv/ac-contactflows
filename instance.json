@@ -1,11 +1,1 @@
-{
-  "StorageType": "S3",
-  "S3Config": {
-    "BucketName": "amazon-connect-92cff7c508d9",
-    "BucketPrefix": "connect/asdfdadsfd/Reports",
-    "EncryptionConfig": {
-      "EncryptionType": "KMS",
-      "KeyId": "arn:aws:kms:us-east-1:357837012270:key/0725a969-88d2-4ad8-bd1c-69157746371e"
-    }
-  }
-}
+'{"StorageType": "S3","S3Config": {"BucketName": "amazon-connect-92cff7c508d9","BucketPrefix": "connect/Instance_Alias/Reports","EncryptionConfig":{"EncryptionType":"KMS","KeyId": "arn:aws:kms:us-east-1:357837012270:key/0725a969-88d2-4ad8-bd1c-69157746371e"}}}'
