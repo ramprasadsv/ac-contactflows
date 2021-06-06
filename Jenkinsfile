@@ -31,7 +31,7 @@ pipeline {
             }
         }
         
-        stage('Populate Flows') {
+        stage('Primary instance') {
             steps {
                 echo "List all the flows in primary instance "
                 withAWS(credentials: '71b568ab-3ca8-4178-b03f-c112f0fd5030', region: 'us-east-1') {
@@ -39,6 +39,16 @@ pipeline {
                         def ti =  sh(script: "aws connect list-contact-flows --instance-id ${INSTANCEARN}", returnStdout: true).trim()
                         echo ti
                         PRIMARYLIST = jsonParse(ti)
+                    }
+                }
+            }
+        }
+        
+        stage('Secondary instance') {
+            steps {
+                echo "List all the flows in primary instance "
+                withAWS(credentials: '71b568ab-3ca8-4178-b03f-c112f0fd5030', region: 'us-east-1') {
+                    script {
                         def si =  sh(script: "aws connect list-contact-flows --instance-id ${TRAGETINSTANCEARN}", returnStdout: true).trim()
                         echo si
                         TARGETLIST = jsonParse(si)
