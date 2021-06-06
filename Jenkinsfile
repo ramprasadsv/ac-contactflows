@@ -9,6 +9,8 @@ def jsonParse(def json) {
 def CONTACTFLOW = ""
 def INSTANCEARN = "662de594-7bab-4713-952b-2b4cb16f2724"
 def FLOWID = "3b0db24a-c113-4847-8857-113c2c064131"
+def TRAGETINSTANCEARN = "662de594-7bab-4713-952b-2b4cb16f2724"
+def TARGETFLOWID = "733b11b2-42ec-42c2-9d20-ae657bc6a1e7"
 pipeline {
     agent any
     stages {
@@ -44,6 +46,9 @@ pipeline {
                         echo content                        
                         def json = JsonOutput.toJson(content)
                         echo json
+                        def di =  sh(script: "aws connect update-contact-flow-content --instance-id ${TRAGETINSTANCEARN} --contact-flow-id ${TARGETFLOWID}" --content ${json}, returnStdout: true).trim()
+                        echo di
+                        
                     }
                 }
             }
