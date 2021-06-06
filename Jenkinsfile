@@ -67,11 +67,12 @@ pipeline {
                 withAWS(credentials: '71b568ab-3ca8-4178-b03f-c112f0fd5030', region: 'us-east-1') {
                     script {
                         def pl = jsonParse(PRIMARYLIST)
-                        pl.ContactFlowSummaryList.each {
-                            println "Checking flow : $it.Name of Type $it.ContactFlowType"
-                            String flowName = $it.Name
-                            String flowType = $it.ContactFlowType
-                            String flowId = $it.Id
+                        for(i = 0; i < pl.ContactFlowSummaryList.size(); i++){
+                            def obj = pl.ContactFlowSummaryList[i]
+                            println "Start comparing flow : $obj.Name of Type $obj.ContactFlowType"
+                            String flowName = obj.Name
+                            String flowType = obj.ContactFlowType
+                            String flowId = obj.Id
                             boolean flowFound = checkList(flowName)
                             if(flowFound == false) {
                                withAWS(credentials: '71b568ab-3ca8-4178-b03f-c112f0fd5030', region: 'us-east-1') {
