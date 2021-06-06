@@ -5,7 +5,9 @@ import groovy.json.JsonOutput;
 def jsonParse(def json) {
     new groovy.json.JsonSlurper().parseText(json)
 }
-
+def toJSON(def json) {
+    new groovy.json.JsonOutput.toJson(json)
+}
 def CONTACTFLOW = ""
 def INSTANCEARN = "662de594-7bab-4713-952b-2b4cb16f2724"
 def FLOWID = "3b0db24a-c113-4847-8857-113c2c064131"
@@ -44,7 +46,7 @@ pipeline {
                             content = content.replaceAll(arnmapping[i].sourceARN, arnmapping[i].targetARN)
                         }
                         echo content                        
-                        String json = JsonOutput.toJson(content)
+                        String json = toJSON(content)
                         echo json
                         println json.getClass()
                         def di =  sh(script: "aws connect update-contact-flow-content --instance-id ${TRAGETINSTANCEARN} --contact-flow-id ${TARGETFLOWID} --content ${json}", returnStdout: true).trim()
