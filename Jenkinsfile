@@ -31,12 +31,12 @@ pipeline {
                         echo data
                         def data2 = sh(script: 'cat arnmapping.json', returnStdout: true).trim()    
                         echo data2
-                        //def flow = jsonParse(data)
+                        def flow = jsonParse(data)
                         def arnmapping = jsonParse(data2)
                         for(i = 0; i < arnmapping.size(); i++){
-                            data.replaceAll(arnmapping[i].sourceARN, arnmapping[i].targetARN)
+                            flow.replaceAll(arnmapping[i].sourceARN, arnmapping[i].targetARN)
                         }
-                        echo data                        
+                        echo flow                        
                     }
                 }
             }
