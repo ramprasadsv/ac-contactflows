@@ -8,6 +8,19 @@ def jsonParse(def json) {
 def toJSON(def json) {
     new groovy.json.JsonOutput().toJson(json)
 }
+def checkList(def flowName) {
+    def tl = jsonParse(TARGETLIST)
+    def flowFound = false
+    tl.ContactFlowSummaryList.each {
+        def fn = $it.Name
+        if(flowName.equals(fn)) {
+            flowFound = true
+            println "Found the flow $flowName"
+        }
+    }
+    return flowFound
+}
+
 def CONTACTFLOW = ""
 
 def INSTANCEARN = "662de594-7bab-4713-952b-2b4cb16f2724"
@@ -57,15 +70,7 @@ pipeline {
                             def flowName = $it.Name
                             def flowType = $it.ContactFlowType
                             def flowId = $it.Id
-                            def tl = jsonParse(TARGETLIST)
-                            def flowFound = false
-                            tl.ContactFlowSummaryList.each {
-                                def fn = $it.Name
-                                if(flowName.equals(fn)) {
-                                    flowFound = true
-                                    println "Found the flow $flowName"
-                                }
-                            }
+                            def flowFound = checkList(flowName)
                             if(flowFound == false) {
                                withAWS(credentials: '71b568ab-3ca8-4178-b03f-c112f0fd5030', region: 'us-east-1') {
                                    script {
