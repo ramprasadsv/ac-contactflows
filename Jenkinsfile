@@ -29,12 +29,13 @@ pipeline {
                         //def data2 = sh(script: 'cat contactflow.json', returnStdout: true).trim()    
                         def data = sh(script: 'cat a-test1.json', returnStdout: true).trim()    
                         echo data
-                        def flow = jsonParse(data)
                         def data2 = sh(script: 'cat arnmapping.json', returnStdout: true).trim()    
                         echo data2
+                        //def flow = jsonParse(data)
                         def arnmapping = jsonParse(data2)
-                        list.each {
-                            data = data.replaceAll(it.sourceARN, it.targetARN)
+                        list.each { k, v ->
+                            //data = data.replaceAll(it.sourceARN, it.targetARN)
+                            println k
                         }
                         echo data
                     }
