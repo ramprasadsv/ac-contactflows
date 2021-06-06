@@ -11,8 +11,9 @@ def toJSON(def json) {
 def checkList(def flowName) {
     def tl = jsonParse(TARGETLIST)
     def flowFound = false
-    tl.ContactFlowSummaryList.each {
-        def fn = $it.Name
+    for(i = 0; i < tl.ContactFlowSummaryList.size(); i++){
+        def obj = tl.ContactFlowSummaryList[i]
+        def fn = obj.Name
         if(flowName.equals(fn)) {
             flowFound = true
             println "Found the flow $flowName"
