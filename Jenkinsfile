@@ -13,6 +13,7 @@ def INSTANCEARN = "662de594-7bab-4713-952b-2b4cb16f2724"
 def FLOWID = "3b0db24a-c113-4847-8857-113c2c064131"
 String TRAGETINSTANCEARN = "662de594-7bab-4713-952b-2b4cb16f2724"
 String TARGETFLOWID = "733b11b2-42ec-42c2-9d20-ae657bc6a1e7"
+String TARGETJSON = ""
 pipeline {
     agent any
     stages {
@@ -49,9 +50,7 @@ pipeline {
                         String json = toJSON(content)
                         echo json.toString()
                         println( json.getClass() )
-                        String inputJSON = json.toString()
-                        def di =  sh(script: "aws connect update-contact-flow-content --instance-id ${TRAGETINSTANCEARN} --contact-flow-id ${TARGETFLOWID} --content ${inputJSON}", returnStdout: true).trim()
-                        echo di
+                        TARGETJSON = json.toString()
                         
                     }
                 }
@@ -60,6 +59,8 @@ pipeline {
         stage('update contact flow') {
             steps {
                 echo "Testing "
+                def di =  sh(script: "aws connect update-contact-flow-content --instance-id ${TRAGETINSTANCEARN} --contact-flow-id ${TARGETFLOWID} --content ${TARGETJSON}", returnStdout: true).trim()
+                echo di
             }
         }
         stage('end') {
