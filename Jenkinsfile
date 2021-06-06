@@ -60,7 +60,8 @@ pipeline {
                             def tl = jsonParse(TARGETLIST)
                             def flowFound = false
                             tl.ContactFlowSummaryList.each {
-                                if(flowName.equals($it.Name)) {
+                                def fn = $it.Name
+                                if(flowName.equals(fn)) {
                                     flowFound = true
                                     println "Found the flow $flowName"
                                 }
