@@ -33,10 +33,12 @@ pipeline {
                         echo data2
                         def flow = jsonParse(data)
                         def arnmapping = jsonParse(data2)
+                        def data2 = flow.ContactFlow.Content    
+                        echo data2
                         for(i = 0; i < arnmapping.size(); i++){
-                            flow.replaceAll(arnmapping[i].sourceARN, arnmapping[i].targetARN)
+                            data2.replaceAll(arnmapping[i].sourceARN, arnmapping[i].targetARN)
                         }
-                        echo flow                        
+                        echo data2                        
                     }
                 }
             }
