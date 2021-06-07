@@ -55,7 +55,7 @@ pipeline {
                         int listSize = pl.QuickConnectSummaryList.size() 
                         println "Primary list size $listSize"
                         for(int i = 0; i < listSize; i++){
-                            def obj = pl.QuickConnectSummaryList[j]
+                            def obj = pl.QuickConnectSummaryList[i]
                             String qcName = obj.Name
                             String qcId = obj.Id
                             String qcType = obj.QuickConnectType
