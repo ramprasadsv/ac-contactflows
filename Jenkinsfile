@@ -62,63 +62,34 @@ pipeline {
             }
         }
         
-        stage('Primary instance') {
+        stage('List all quick connects') {
             steps {
-                echo "List all the flows in both instance "
+                echo "List all quick in both instance "
                 withAWS(credentials: '71b568ab-3ca8-4178-b03f-c112f0fd5030', region: 'us-east-1') {
                     script {
-                        PRIMARYLIST =  sh(script: "aws connect list-contact-flows --instance-id ${INSTANCEARN}", returnStdout: true).trim()
+                        PRIMARYLIST =  sh(script: "aws connect list-quick-connects --instance-id ${INSTANCEARN}", returnStdout: true).trim()
                         echo PRIMARYLIST
-                        TARGETLIST =  sh(script: "aws connect list-contact-flows --instance-id ${TRAGETINSTANCEARN}", returnStdout: true).trim()
+                        TARGETLIST =  sh(script: "aws connect list-quick-connects --instance-id ${TRAGETINSTANCEARN}", returnStdout: true).trim()
                         echo TARGETLIST 
                     }
                 }
             }
         }
         
-        stage('Find Missing flows') {
+        stage('Find Missing quick connects') {
             steps {
-                echo "Identify the flows missing and create them"                
-                    script {
-                        def pl = jsonParse(PRIMARYLIST)
-                        def arn = INSTANCEARN
-                        def tl = TARGETLIST
-                        int listSize = pl.ContactFlowSummaryList.size() 
-                        println "Primary list size $listSize"
-                        for(int i = 0; i < listSize; i++){
-                            def obj = pl.ContactFlowSummaryList[i]
-                            println "Start comparing flow : $obj.Name of Type $obj.ContactFlowType"
-                            String flowName = obj.Name
-                            String flowType = obj.ContactFlowType
-                            String flowId = obj.Id
-                            boolean flowFound = checkList(flowName, tl)
-                            if(flowFound == false) {
-                               println "Missing flow $flowName of type : $flowType"                               
-                               def fd = flowType.concat('#').concat(flowName) 
-                               MISSINGFLOWS.put(flowId, fd) 
-                            }
-                        }                        
-                    }                
-                }
-            } 
+                echo "Identify the flows quick connects "                
+                script {
+                                                
+                }                
+            }
+        } 
 
-         stage('Create Missing flows') {
+         stage('Create Missing quick connects') {
             steps {
-                echo "Create the flows that were missing"                
+                echo "Create the quick connects that were missing"                
                 withAWS(credentials: '71b568ab-3ca8-4178-b03f-c112f0fd5030', region: 'us-east-1') {   
                     script {
-                        MISSINGFLOWS.each { key, value ->
-                            println "Id: $key Age: $value"
-                            def flowId = key
-                            def flowDetails = value.split("#")
-                            def flowType = flowDetails[0]
-                            def flowName = flowDetails[1]
-                            def di =  sh(script: "aws connect describe-contact-flow --instance-id ${INSTANCEARN} --contact-flow-id ${flowId}", returnStdout: true).trim()
-                            echo di
-                            def content = getFlowContent(di)
-                            def dc =  sh(script: "aws connect create-contact-flow --instance-id ${TRAGETINSTANCEARN} --name ${flowName} --type ${flowType} --content ${content}", returnStdout: true).trim()
-                            echo dc
-                        }
                     }                
                 }
             } 
