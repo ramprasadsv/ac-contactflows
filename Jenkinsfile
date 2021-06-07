@@ -8,45 +8,36 @@ def jsonParse(def json) {
 def toJSON(def json) {
     new groovy.json.JsonOutput().toJson(json)
 }
-def checkList(def flowName, targetList) {
+def checkList(primaryList, targetList) {
+    def pl = jsonParse(primaryList)
     def tl = jsonParse(targetList)
-    def flowFound = false
-    for(int i = 0; i < tl.ContactFlowSummaryList.size(); i++){
-        def obj = tl.ContactFlowSummaryList[i]
-        def fn = obj.Name
-        if(flowName.equals(fn)) {
-            flowFound = true
+    def map = [:]
+    for(int j = 0; j < pl.QuickConnectSummaryList.size(); j++){
+        def obj = pl.QuickConnectSummaryList[j]
+        def qcName = obj.Name
+        def qcId = obj.Id
+        boolean qcFound = false
+        for(int i = 0; i < tl.QuickConnectSummaryList.size(); i++){
+            def obj2 = tl.QuickConnectSummaryList[i]
+            def qcName2 = obj.Name
+            if(qcName2.equals(qcName)) {
+                flowFound = true
+            }
+        }
+        if(qcFound == false){
+           println "Not able to find : $qcId with Name -> $qcName"
+           map.put(qcId, qcId) 
         }
     }
-    return flowFound
+    return map
 }
 
-def awsAction (arn, flowId) {
-    def di
-    withAWS(credentials: '71b568ab-3ca8-4178-b03f-c112f0fd5030', region: 'us-east-1') {
-       di =  sh(script: "aws connect describe-contact-flow --instance-id ${arn} --contact-flow-id ${flowId}", returnStdout: true).trim()
-       echo di                                     
-    }
-    return di
-}
 
-def getFlowContent(flow) {
-    def fd = jsonParse(flow)
-    String content = fd.ContactFlow.Content
-    String json = toJSON(content)
-    content = json.toString()
-    return content
-}
-
-def CONTACTFLOW = ""
 
 def INSTANCEARN = "662de594-7bab-4713-952b-2b4cb16f2724"
 def FLOWID = "3b0db24a-c113-4847-8857-113c2c064131"
-def MISSINGFLOWS = [:]
+def MISSINGQC = [:]
 String TRAGETINSTANCEARN = "de1c040b-d1fe-4b12-b1e8-5e072329b86a"
-String TARGETFLOWID = "733b11b2-42ec-42c2-9d20-ae657bc6a1e7"
-String TARGETFLOWID2 = "082ffc0c-390f-4cd0-8480-231489f35618"
-String TARGETJSON = ""
 String PRIMARYLIST = ""
 String TARGETLIST = ""
 
@@ -62,63 +53,41 @@ pipeline {
             }
         }
         
-        stage('Primary instance') {
+        stage('List all quick connects') {
             steps {
-                echo "List all the flows in both instance "
+                echo "List all quick in both instance "
                 withAWS(credentials: '71b568ab-3ca8-4178-b03f-c112f0fd5030', region: 'us-east-1') {
                     script {
-                        PRIMARYLIST =  sh(script: "aws connect list-contact-flows --instance-id ${INSTANCEARN}", returnStdout: true).trim()
+                        PRIMARYLIST =  sh(script: "aws connect list-quick-connects --instance-id ${INSTANCEARN}", returnStdout: true).trim()
                         echo PRIMARYLIST
-                        TARGETLIST =  sh(script: "aws connect list-contact-flows --instance-id ${TRAGETINSTANCEARN}", returnStdout: true).trim()
+                        TARGETLIST =  sh(script: "aws connect list-quick-connects --instance-id ${TRAGETINSTANCEARN}", returnStdout: true).trim()
                         echo TARGETLIST 
+                        MISSINGQC = checkList(PRIMARYLIST, TARGETLIST)
+                        echo MISSINGQC
                     }
                 }
             }
         }
         
-        stage('Find Missing flows') {
+        stage('Find Missing quick connects') {
             steps {
-                echo "Identify the flows missing and create them"                
-                    script {
-                        def pl = jsonParse(PRIMARYLIST)
-                        def arn = INSTANCEARN
-                        def tl = TARGETLIST
-                        int listSize = pl.ContactFlowSummaryList.size() 
-                        println "Primary list size $listSize"
-                        for(int i = 0; i < listSize; i++){
-                            def obj = pl.ContactFlowSummaryList[i]
-                            println "Start comparing flow : $obj.Name of Type $obj.ContactFlowType"
-                            String flowName = obj.Name
-                            String flowType = obj.ContactFlowType
-                            String flowId = obj.Id
-                            boolean flowFound = checkList(flowName, tl)
-                            if(flowFound == false) {
-                               println "Missing flow $flowName of type : $flowType"                               
-                               def fd = flowType.concat('#').concat(flowName) 
-                               MISSINGFLOWS.put(flowId, fd) 
-                            }
-                        }                        
-                    }                
-                }
-            } 
-
-         stage('Create Missing flows') {
-            steps {
-                echo "Create the flows that were missing"                
+                echo "Identify the flows quick connects "                
                 withAWS(credentials: '71b568ab-3ca8-4178-b03f-c112f0fd5030', region: 'us-east-1') {   
                     script {
-                        MISSINGFLOWS.each { key, value ->
-                            def flowId = key
-                            def flowDetails = value.split("#")
-                            def flowType = flowDetails[0]
-                            def flowName = flowDetails[1]
-                            def di =  sh(script: "aws connect describe-contact-flow --instance-id ${INSTANCEARN} --contact-flow-id ${flowId}", returnStdout: true).trim()
+                        MISSINGQC.each { key ->
+                            def qcId = key
+                            def di =  sh(script: "aws connect describe-quick-connect --instance-id ${INSTANCEARN} --quick-connect-id ${qcId}", returnStdout: true).trim()
                             echo di
-                            def content = getFlowContent(di)
-                            def dc =  sh(script: "aws connect create-contact-flow --instance-id ${TRAGETINSTANCEARN} --name ${flowName} --type ${flowType} --content ${content}", returnStdout: true).trim()
-                            echo dc
                         }
                     }                
+                }
+            }
+        } 
+
+         stage('Create Missing quick connects') {
+            steps {
+                echo "Create the quick connects that were missing"                
+                withAWS(credentials: '71b568ab-3ca8-4178-b03f-c112f0fd5030', region: 'us-east-1') {   
                 }
             } 
          }
