@@ -65,6 +65,8 @@ pipeline {
                 withAWS(credentials: '71b568ab-3ca8-4178-b03f-c112f0fd5030', region: 'us-east-1') {
                     script {
                         def pl = jsonParse(PRIMARYLIST)
+                        def arn = INSTANCEARN
+                        def tl = TARGETLIST
                         int listSize = pl.ContactFlowSummaryList.size() 
                         println "Primary list size $listSize"
                         for(int i = 0; i < listSize; i++){
@@ -73,10 +75,9 @@ pipeline {
                             String flowName = obj.Name
                             String flowType = obj.ContactFlowType
                             String flowId = obj.Id
-                            boolean flowFound = checkList(flowName, TARGETLIST)
+                            boolean flowFound = checkList(flowName, tl)
                             if(flowFound == false) {
-                               println "Missing flow $flowName of type : $flowType"
-                               def arn = INSTANCEARN
+                               println "Missing flow $flowName of type : $flowType"                               
                                def di =  sh(script: "aws connect describe-contact-flow --instance-id ${arn} --contact-flow-id ${flowId}", returnStdout: true).trim()
                                echo di 
                             }
