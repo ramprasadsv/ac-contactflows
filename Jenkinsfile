@@ -96,6 +96,7 @@ pipeline {
          stage('Create Missing flows') {
             steps {
                 echo "Create the flows that were missing"                
+                withAWS(credentials: '71b568ab-3ca8-4178-b03f-c112f0fd5030', region: 'us-east-1') {   
                     script {
                         MISSINGFLOWS.each { key, value ->
                             println "Id: $key Age: $value"
@@ -106,7 +107,7 @@ pipeline {
                     }                
                 }
             } 
-
+         }
         
      }
 }
