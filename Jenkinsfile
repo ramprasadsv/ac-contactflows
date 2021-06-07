@@ -79,9 +79,6 @@ pipeline {
         stage('Find Missing quick connects') {
             steps {
                 echo "Identify the flows quick connects "                
-                script {
-                                                
-                }                
             }
         } 
 
@@ -89,8 +86,6 @@ pipeline {
             steps {
                 echo "Create the quick connects that were missing"                
                 withAWS(credentials: '71b568ab-3ca8-4178-b03f-c112f0fd5030', region: 'us-east-1') {   
-                    script {
-                    }                
                 }
             } 
          }
