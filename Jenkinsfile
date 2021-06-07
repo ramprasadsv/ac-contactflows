@@ -21,6 +21,15 @@ def checkList(def flowName, targetList) {
     return flowFound
 }
 
+def awsAction () {
+    def di
+    withAWS(credentials: '71b568ab-3ca8-4178-b03f-c112f0fd5030', region: 'us-east-1') {
+       di =  sh(script: "aws connect describe-contact-flow --instance-id ${arn} --contact-flow-id ${flowId}", returnStdout: true).trim()
+       echo di                                     
+    }
+    return di
+}
+
 def CONTACTFLOW = ""
 
 def INSTANCEARN = "662de594-7bab-4713-952b-2b4cb16f2724"
@@ -78,10 +87,12 @@ pipeline {
                             boolean flowFound = checkList(flowName, tl)
                             if(flowFound == false) {
                                println "Missing flow $flowName of type : $flowType"                               
-                               withAWS(credentials: '71b568ab-3ca8-4178-b03f-c112f0fd5030', region: 'us-east-1') {
+                               def di = awsAction()
+                               echo di
+                               /*withAWS(credentials: '71b568ab-3ca8-4178-b03f-c112f0fd5030', region: 'us-east-1') {
                                    def di =  sh(script: "aws connect describe-contact-flow --instance-id ${arn} --contact-flow-id ${flowId}", returnStdout: true).trim()
                                    echo di                                     
-                                }
+                                }*/
                             }
                         }                        
                     }
