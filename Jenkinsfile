@@ -8,28 +8,16 @@ def jsonParse(def json) {
 def toJSON(def json) {
     new groovy.json.JsonOutput().toJson(json)
 }
-def checkList(primaryList, targetList) {
-    def pl = jsonParse(primaryList)
-    def tl = jsonParse(targetList)
-    def map = [:]
-    for(int j = 0; j < pl.QuickConnectSummaryList.size(); j++){
-        def obj = pl.QuickConnectSummaryList[j]
-        String qcName = obj.Name
-        String qcId = obj.Id
-        boolean qcFound = false
-        for(int i = 0; i < tl.QuickConnectSummaryList.size(); i++){
-            def obj2 = tl.QuickConnectSummaryList[i]
-            String qcName2 = obj2.Name
-            if(qcName2.equals(qcName)) {
-                qcFound = true
-            }
-        }
-        if(qcFound == false){
-           println "Not able to find : $qcId with Name -> $qcName"
-           map.put(qcId , qcName) 
+def checkList(qcName, tl) {
+    boolean qcFound = false
+    for(int i = 0; i < tl.QuickConnectSummaryList.size(); i++){
+        def obj2 = tl.QuickConnectSummaryList[i]
+        String qcName2 = obj2.Name
+        if(qcName2.equals(qcName)) {
+            qcFound = true
         }
     }
-    return map
+    return qcFound
 }
 
 
@@ -62,7 +50,21 @@ pipeline {
                         echo PRIMARYLIST
                         TARGETLIST =  sh(script: "aws connect list-quick-connects --instance-id ${TRAGETINSTANCEARN}", returnStdout: true).trim()
                         echo TARGETLIST 
-                        MISSINGQC = checkList(PRIMARYLIST, TARGETLIST)
+                        def pl = jsonParse(PRIMARYLIST)
+                        def tl = jsonParse(TARGETLIST)
+                        int listSize = pl.QuickConnectSummaryList.size() 
+                        println "Primary list size $listSize"
+                        for(int i = 0; i < listSize; i++){
+                            def obj = pl.QuickConnectSummaryList[j]
+                            String qcName = obj.Name
+                            String qcId = obj.Id
+                            String qcType = obj.QuickConnectType
+                            boolean qcFound = checkList(qcName, tl)
+                            if(qcFound == false) {
+                               println "Missing flow $qcName of type : $qcType"                                                              
+                               MISSINGQC.put(qcId, qcName) 
+                            }
+                        }                        
                         echo MISSINGQC
                     }
                 }
