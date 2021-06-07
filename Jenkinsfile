@@ -93,9 +93,9 @@ pipeline {
                 }
             } 
 
-         stage('Find Missing flows') {
+         stage('Create Missing flows') {
             steps {
-                echo "Identify the flows missing and create them"                
+                echo "Create the flows that were missing"                
                     script {
                         MISSINGFLOWS.each { key, value ->
                             println "Name: $key Age: $value"
