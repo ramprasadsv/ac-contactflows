@@ -62,7 +62,7 @@ pipeline {
         stage('Find Missing flows') {
             steps {
                 echo "Identify the flows missing and create them"
-                withAWS(credentials: '71b568ab-3ca8-4178-b03f-c112f0fd5030', region: 'us-east-1') {
+                
                     script {
                         def pl = jsonParse(PRIMARYLIST)
                         def arn = INSTANCEARN
@@ -78,15 +78,14 @@ pipeline {
                             boolean flowFound = checkList(flowName, tl)
                             if(flowFound == false) {
                                println "Missing flow $flowName of type : $flowType"                               
-                                script {
+                               withAWS(credentials: '71b568ab-3ca8-4178-b03f-c112f0fd5030', region: 'us-east-1') {
                                    def di =  sh(script: "aws connect describe-contact-flow --instance-id ${arn} --contact-flow-id ${flowId}", returnStdout: true).trim()
                                    echo di                                     
                                 }
                             }
-                        }
-                        
+                        }                        
                     }
-                }
+                
             }
         }
         
