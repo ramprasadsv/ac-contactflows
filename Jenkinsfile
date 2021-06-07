@@ -78,8 +78,10 @@ pipeline {
                             boolean flowFound = checkList(flowName, tl)
                             if(flowFound == false) {
                                println "Missing flow $flowName of type : $flowType"                               
-                               def di =  sh(script: "aws connect describe-contact-flow --instance-id ${arn} --contact-flow-id ${flowId}", returnStdout: true).trim()
-                               echo di 
+                                script {
+                                   def di =  sh(script: "aws connect describe-contact-flow --instance-id ${arn} --contact-flow-id ${flowId}", returnStdout: true).trim()
+                                   echo di                                     
+                                }
                             }
                         }
                         
