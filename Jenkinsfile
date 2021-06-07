@@ -32,7 +32,10 @@ def awsAction (arn, flowId) {
 
 def getFlowContent(flow) {
     def fd = jsonParse(flow)
-    return fd.ContactFlow.Content
+    String content = fd.ContactFlow.Content
+    String json = toJSON(content)
+    content = json.toString()
+    return content
 }
 
 def CONTACTFLOW = ""
