@@ -12,8 +12,8 @@ def checkList(primaryList, targetList) {
     def pl = jsonParse(primaryList)
     def tl = jsonParse(targetList)
     def map = [:]
-    for(int j = 0; i < tl.QuickConnectSummaryList.size(); i++){
-        def obj = pl.QuickConnectSummaryList[i]
+    for(int j = 0; j < tl.QuickConnectSummaryList.size(); j++){
+        def obj = pl.QuickConnectSummaryList[j]
         def qcName = obj.Name
         def qcId = obj.Id
         boolean qcFound = false
@@ -94,7 +94,7 @@ pipeline {
                 echo "Identify the flows quick connects "                
                 withAWS(credentials: '71b568ab-3ca8-4178-b03f-c112f0fd5030', region: 'us-east-1') {   
                     script {
-                        MISSINGQC.each { key, value ->
+                        MISSINGQC.each { key ->
                             def qcId = key
                             def di =  sh(script: "aws connect describe-quick-connect --instance-id ${INSTANCEARN} --quick-connect-id ${qcId}", returnStdout: true).trim()
                             echo di
