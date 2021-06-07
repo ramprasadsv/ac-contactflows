@@ -98,8 +98,8 @@ pipeline {
                 echo "Create the flows that were missing"                
                     script {
                         MISSINGFLOWS.each { key, value ->
-                            println "Name: $key Age: $value"
-                            def flowId = $key
+                            println "Id: $key Age: $value"
+                            def flowId = key
                             def di =  sh(script: "aws connect describe-contact-flow --instance-id ${INSTANCEARN} --contact-flow-id ${flowId}", returnStdout: true).trim()
                             echo di
                         }
