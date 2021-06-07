@@ -14,19 +14,21 @@ def checkList(primaryList, targetList) {
     def map = [:]
     for(int j = 0; j < tl.QuickConnectSummaryList.size(); j++){
         def obj = pl.QuickConnectSummaryList[j]
-        def qcName = obj.Name
+        String qcName = obj.Name
         String qcId = obj.Id
+        String qcType = obj.QuickConnectType
         boolean qcFound = false
         for(int i = 0; i < tl.QuickConnectSummaryList.size(); i++){
             def obj2 = tl.QuickConnectSummaryList[i]
-            def qcName2 = obj.Name
+            String qcName2 = obj.Name
             if(qcName2.equals(qcName)) {
                 flowFound = true
             }
         }
         if(qcFound == false){
            println "Not able to find : $qcId with Name -> $qcName"
-           map.put(qcId, qcName) 
+           def qc = qcType.concat("#").concat(qcName)
+           map.put(qcId, qc) 
         }
     }
     return map
