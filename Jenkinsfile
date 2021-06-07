@@ -21,13 +21,18 @@ def checkList(def flowName, targetList) {
     return flowFound
 }
 
-def awsAction () {
+def awsAction (arn, flowId) {
     def di
     withAWS(credentials: '71b568ab-3ca8-4178-b03f-c112f0fd5030', region: 'us-east-1') {
        di =  sh(script: "aws connect describe-contact-flow --instance-id ${arn} --contact-flow-id ${flowId}", returnStdout: true).trim()
        echo di                                     
     }
     return di
+}
+
+def getFlowContent(flow) {
+    def fd = jsonParse(flow)
+    return fd.ContactFlow.Content
 }
 
 def CONTACTFLOW = ""
@@ -86,7 +91,8 @@ pipeline {
                             boolean flowFound = checkList(flowName, tl)
                             if(flowFound == false) {
                                println "Missing flow $flowName of type : $flowType"                               
-                               MISSINGFLOWS.put(flowId, flowId) 
+                               def fd = flowType.concat('#').concat(flowName) 
+                               MISSINGFLOWS.put(flowId, fd) 
                             }
                         }                        
                     }                
@@ -101,8 +107,14 @@ pipeline {
                         MISSINGFLOWS.each { key, value ->
                             println "Id: $key Age: $value"
                             def flowId = key
+                            def flowDetails = value.split("#")
+                            def flowType = flowDetails[0]
+                            def flowName = flowDetails[1]
                             def di =  sh(script: "aws connect describe-contact-flow --instance-id ${INSTANCEARN} --contact-flow-id ${flowId}", returnStdout: true).trim()
                             echo di
+                            def content = getFlowContent(di)
+                            def dc =  sh(script: "aws connect create-contact-flow --instance-id ${TRAGETINSTANCEARN} --name ${flowName} --type ${flowType} --content ${content}", returnStdout: true).trim()
+                            echo dc
                         }
                     }                
                 }
