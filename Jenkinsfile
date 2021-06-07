@@ -26,7 +26,7 @@ def checkList(primaryList, targetList) {
         }
         if(qcFound == false){
            println "Not able to find : $qcId with Name -> $qcName"
-           map.put(qcId) 
+           map.put(qcId, qcId) 
         }
     }
     return map
