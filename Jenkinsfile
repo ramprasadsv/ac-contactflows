@@ -21,7 +21,7 @@ def checkList(primaryList, targetList) {
             def obj2 = tl.QuickConnectSummaryList[i]
             String qcName2 = obj2.Name
             if(qcName2.equals(qcName)) {
-                flowFound = true
+                qcFound = true
             }
         }
         if(qcFound == false){
