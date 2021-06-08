@@ -82,7 +82,7 @@ pipeline {
                             if(qcId.length() > 2){
                                 def di =  sh(script: "aws connect describe-quick-connect --instance-id ${INSTANCEARN} --quick-connect-id ${qcId}", returnStdout: true).trim()
                                 echo di
-                                def qc = toJSON(di)
+                                def qc = jsonParse(di)
                                 echo qc
                                 String qcConfig=""
                                 if(qc.QuickConnect.QuickConnectConfig.QuickConnectType.equals("PHONE_NUMBER")){
