@@ -16,7 +16,7 @@ def checkList(primaryList, targetList) {
     for(int j = 0; j < tl.QuickConnectSummaryList.size(); j++){
         def obj = pl.QuickConnectSummaryList[j]
         String qcName = obj.Name
-        String qcId = obj.Id
+        def qcId = obj.Id
         String qcType = obj.QuickConnectType
         boolean qcFound = false
         for(int i = 0; i < tl.QuickConnectSummaryList.size(); i++){
@@ -29,7 +29,7 @@ def checkList(primaryList, targetList) {
         if(qcFound == false){
            println "Not able to find : $qcId with Name -> $qcName"
            def qc = qcType.concat("#").concat(qcName)
-           map.put(qcId.toString(), qc)
+           map.put(qcId, qc)
         }
     }
     return map
