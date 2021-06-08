@@ -8,26 +8,15 @@ def jsonParse(def json) {
 def toJSON(def json) {
     new groovy.json.JsonOutput().toJson(json)
 }
-def checkList(qcName, tl) {
-    boolean qcFound = false
-    for(int i = 0; i < tl.QuickConnectSummaryList.size(); i++){
-        def obj2 = tl.QuickConnectSummaryList[i]
-        String qcName2 = obj2.Name
-        if(qcName2.equals(qcName)) {
-            qcFound = true
-        }
-    }
-    return qcFound
-}
-
+def CONTACTFLOW = ""
 
 def INSTANCEARN = "662de594-7bab-4713-952b-2b4cb16f2724"
 def FLOWID = "3b0db24a-c113-4847-8857-113c2c064131"
-//def MISSINGQC = [:]
-String MISSINGQC = ""
+
 String TRAGETINSTANCEARN = "de1c040b-d1fe-4b12-b1e8-5e072329b86a"
-String PRIMARYLIST = ""
-String TARGETLIST = ""
+String TARGETFLOWID = "733b11b2-42ec-42c2-9d20-ae657bc6a1e7"
+String TARGETFLOWID2 = "082ffc0c-390f-4cd0-8480-231489f35618"
+String TARGETJSON = ""
 
 pipeline {
     agent any
@@ -40,80 +29,93 @@ pipeline {
                    
             }
         }
-        
-        stage('List all quick connects') {
-            steps {
-                echo "List all quick in both instance "
+        stage('read flow from git') {
+            steps{
+                echo 'Reading the contact flow content '
                 withAWS(credentials: '71b568ab-3ca8-4178-b03f-c112f0fd5030', region: 'us-east-1') {
                     script {
-                        PRIMARYLIST =  sh(script: "aws connect list-quick-connects --instance-id ${INSTANCEARN}", returnStdout: true).trim()
-                        echo PRIMARYLIST
-                        TARGETLIST =  sh(script: "aws connect list-quick-connects --instance-id ${TRAGETINSTANCEARN}", returnStdout: true).trim()
-                        echo TARGETLIST 
-                        def pl = jsonParse(PRIMARYLIST)
-                        def tl = jsonParse(TARGETLIST)
-                        int listSize = pl.QuickConnectSummaryList.size() 
-                        println "Primary list size $listSize"
-                        for(int i = 0; i < listSize; i++){
-                            def obj = pl.QuickConnectSummaryList[i]
-                            String qcName = obj.Name
-                            String qcId = obj.Id
-                            String qcType = obj.QuickConnectType
-                            boolean qcFound = checkList(qcName, tl)
-                            if(qcFound == false) {
-                                println "Missing $qcName of type : $qcType -> $qcId"                                                              
-                                MISSINGQC = MISSINGQC.concat(qcId).concat(",")                                
-                            }
+                        def data = sh(script: 'cat a-test1.json', returnStdout: true).trim()    
+                        echo data
+                        def data2 = sh(script: 'cat arnmapping.json', returnStdout: true).trim()    
+                        echo data2
+                        def flow = jsonParse(data)
+                        def arnmapping = jsonParse(data2)
+                        String content = flow.ContactFlow.Content    
+                        echo content
+                        for(i = 0; i < arnmapping.size(); i++){
+                            echo "Checking on ARN : ${arnmapping[i].sourceARN}"
+                            println(content.indexOf(arnmapping[i].sourceARN, 1))
+                            content = content.replaceAll(arnmapping[i].sourceARN, arnmapping[i].targetARN)
                         }
-                        echo "Missing list -> ${MISSINGQC}"
+                        echo content                        
+                        String json = toJSON(content)
+                        echo json.toString()
+                        println( json.getClass() )
+                        TARGETJSON = json.toString()
+                        
+                    }
+                }
+            }
+        }
+        stage('deploy flow after reading from git') {
+            steps {
+                echo "updating flow content after reading from git "
+                withAWS(credentials: '71b568ab-3ca8-4178-b03f-c112f0fd5030', region: 'us-east-1') {
+                    script {
+                        def di =  sh(script: "aws connect update-contact-flow-content --instance-id ${TRAGETINSTANCEARN} --contact-flow-id ${TARGETFLOWID} --content ${TARGETJSON}", returnStdout: true).trim()
+                        echo di
+                    }
+                }
+            }
+        }
+        stage('read flow from api') {
+            steps {
+                    echo 'Reading the contact flow content via api'
+                    withAWS(credentials: '71b568ab-3ca8-4178-b03f-c112f0fd5030', region: 'us-east-1') {
+                        script {
+                            def di =  sh(script: "aws connect describe-contact-flow --instance-id ${INSTANCEARN} --contact-flow-id ${FLOWID}", returnStdout: true).trim()
+                            echo di
+                            def data2 = sh(script: 'cat arnmapping.json', returnStdout: true).trim()    
+                            def flow = jsonParse(di)
+                            def arnmapping = jsonParse(data2)
+                            String content = flow.ContactFlow.Content    
+                            for(i = 0; i < arnmapping.size(); i++){
+                                content = content.replaceAll(arnmapping[i].sourceARN, arnmapping[i].targetARN)
+                            }
+                            String json = toJSON(content)
+                            TARGETJSON = json.toString()
+                     }
+                }
+            }
+        }
+        
+        stage('deploy updated flow after api') {
+            steps {
+                echo "Updating contact flow after reading from api "
+                withAWS(credentials: '71b568ab-3ca8-4178-b03f-c112f0fd5030', region: 'us-east-1') {
+                    script {
+                        def di =  sh(script: "aws connect update-contact-flow-content --instance-id ${TRAGETINSTANCEARN} --contact-flow-id ${TARGETFLOWID2} --content ${TARGETJSON}", returnStdout: true).trim()
+                        echo di
                     }
                 }
             }
         }
         
-        stage('Find Missing quick connects') {
+        
+        stage('resolve missing contact flows') {
             steps {
-                echo "Identify the quick connects "                
-                withAWS(credentials: '71b568ab-3ca8-4178-b03f-c112f0fd5030', region: 'us-east-1') {   
+                echo "List all the flows in both instances "
+                withAWS(credentials: '71b568ab-3ca8-4178-b03f-c112f0fd5030', region: 'us-east-1') {
                     script {
-                        def qcList = MISSINGQC.split(",")
-                        for(int i = 0; i < qcList.size(); i++){
-                            String qcId = qcList[i]
-                            if(qcId.length() > 2){
-                                def di =  sh(script: "aws connect describe-quick-connect --instance-id ${INSTANCEARN} --quick-connect-id ${qcId}", returnStdout: true).trim()
-                                echo di
-                                def qc = jsonParse(di)
-                                String qcConfig=""
-                                if(qc.QuickConnect.QuickConnectConfig.QuickConnectType.equals("PHONE_NUMBER")){
-                                    qcConfig = '"QuickConnectConfig":{"QuickConnectType":"PHONE_NUMBER","PhoneConfig":{"PhoneNumber":"${qc.QuickConnect.QuickConnectConfig.PhoneConfig.PhoneNumber"}}}'
-                                }else if(qc.QuickConnect.QuickConnectConfig.QuickConnectType.equals("USER")){
-                                    //qcConfig = '"QuickConnectConfig":{"QuickConnectType":"USER","UserConfig":{"UserId":"${qc.QuickConnect.QuickConnectConfig.PhoneConfig.PhoneNumber"}}}'
-                                }else{
-                                    //qcConfig = '"QuickConnectConfig":{"QuickConnectType":"QUEUE","QueueConfig":{"QueueId":"${qc.QuickConnect.QuickConnectConfig.PhoneConfig.PhoneNumber"}}}'
-                                    def queueId = qc.QuickConnect.QuickConnectConfig.QueueConfig.QueueId
-                                    def flowId = qc.QuickConnect.QuickConnectConfig.QueueConfig.ContactFlowId
-                                    qc = null
-                                    //def dq =  sh(script: "aws connect describe-queue --instance-id ${INSTANCEARN} --queue-id ${queueId}", returnStdout: true).trim()
-                                    //echo dq
-                                    def dc =  sh(script: "aws connect describe-contact-flow --instance-id ${INSTANCEARN} --contact-flow-id ${flowId}", returnStdout: true).trim()
-                                    echo dc
-                                }
-                                echo qcConfig
-                                //def cq =  sh(script: "aws connect create-quick-connect --instance-id ${INSTANCEARN} --name ${qc.QuickConnect.Name} --description ${qc.QuickConnect.Description} --quick-connect-config ", returnStdout: true).trim()
-                            }
-                        }
-                    }                
+                        def ti =  sh(script: "aws connect list-contact-flows --instance-id ${INSTANCEARN}", returnStdout: true).trim()
+                        echo ti
+                        def si =  sh(script: "aws connect list-contact-flows --instance-id ${TRAGETINSTANCEARN}", returnStdout: true).trim()
+                        echo si
+                        
+                    }
                 }
             }
-        } 
-
-         stage('Create Missing quick connects') {
-            steps {
-                echo "Create the quick connects that were missing"                
-                withAWS(credentials: '71b568ab-3ca8-4178-b03f-c112f0fd5030', region: 'us-east-1') {   
-                }
-            } 
-         }
+        }
         
-     }
+    }
 }
