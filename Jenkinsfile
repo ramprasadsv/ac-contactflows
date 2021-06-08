@@ -24,7 +24,8 @@ def checkList(qcName, tl) {
 
 def INSTANCEARN = "662de594-7bab-4713-952b-2b4cb16f2724"
 def FLOWID = "3b0db24a-c113-4847-8857-113c2c064131"
-def MISSINGQC = [:]
+//def MISSINGQC = [:]
+String MISSINGQC = ""
 String TRAGETINSTANCEARN = "de1c040b-d1fe-4b12-b1e8-5e072329b86a"
 String PRIMARYLIST = ""
 String TARGETLIST = ""
@@ -65,10 +66,9 @@ pipeline {
                             boolean qcFound = checkList(qcName, tl)
                             if(qcFound == false) {
                                 println "Missing # $arr -> QC $qcName of type : $qcType -> $qcId"                                                              
-                                map[arr] = qcId.toString()
-                                arr++                                
+                                MISSINGQC.concat(qcId.toString()).concat(",")                                
                             }
-                            echo arr
+                            echo MISSINGQC
                         }                        
                         
                     }
@@ -81,10 +81,13 @@ pipeline {
                 echo "Identify the flows quick connects "                
                 withAWS(credentials: '71b568ab-3ca8-4178-b03f-c112f0fd5030', region: 'us-east-1') {   
                     script {
-                        MISSINGQC.each { key ->
-                            def qcId = key
-                            def di =  sh(script: "aws connect describe-quick-connect --instance-id ${INSTANCEARN} --quick-connect-id ${qcId}", returnStdout: true).trim()
-                            echo di
+                        def qcList = MISSINGQC.split(",")
+                        for(int i = 0; i < qcList.size(); i++){
+                            String qcId = qcList[i]
+                            if(qc.length() > 2){
+                                def di =  sh(script: "aws connect describe-quick-connect --instance-id ${INSTANCEARN} --quick-connect-id ${qcId}", returnStdout: true).trim()
+                                echo di
+                            }
                         }
                     }                
                 }
