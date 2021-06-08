@@ -93,8 +93,8 @@ pipeline {
                                     def queueId = qc.QuickConnect.QuickConnectConfig.QueueConfig.QueueId
                                     def flowId = qc.QuickConnect.QuickConnectConfig.QueueConfig.ContactFlowId
                                     qc = null
-                                    def dq =  sh(script: "aws connect describe-queue --instance-id ${INSTANCEARN} --queue-id ${queueId}", returnStdout: true).trim()
-                                    echo dq
+                                    //def dq =  sh(script: "aws connect describe-queue --instance-id ${INSTANCEARN} --queue-id ${queueId}", returnStdout: true).trim()
+                                    //echo dq
                                     def dc =  sh(script: "aws connect describe-contact-flow --instance-id ${INSTANCEARN} --contact-flow-id ${flowId}", returnStdout: true).trim()
                                     echo dc
                                 }
