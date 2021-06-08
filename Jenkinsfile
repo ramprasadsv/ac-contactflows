@@ -208,7 +208,7 @@ pipeline {
                                     qc = null
                                     String targetFlowId = getFlowId (PRIMARYCFS, flowId, TARGETCFS)
                                     String targetUserId = getUserId (PRIMARYUSERS, userId, TARGETUSERS)
-                                    String qcConfig = "QuickConnectType=USER,UserConfig={UserId=${targetQueueId},ContactFlowId=${targetFlowId}}"
+                                    String qcConfig = "QuickConnectType=USER,UserConfig={UserId=${targetUserId},ContactFlowId=${targetFlowId}}"
                                     def cu =  sh(script: "aws connect create-quick-connect --instance-id ${TRAGETINSTANCEARN} --name ${qcName} --description ${qcDesc} --quick-connect-config ${qcConfig}", returnStdout: true).trim()
                                     echo cu
                                 }else{                                    
