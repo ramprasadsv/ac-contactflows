@@ -181,12 +181,11 @@ pipeline {
                                 def di =  sh(script: "aws connect describe-quick-connect --instance-id ${INSTANCEARN} --quick-connect-id ${qcId}", returnStdout: true).trim()
                                 echo di
                                 def qc = jsonParse(di)
-                                String qcConfig=""
                                 if(qc.QuickConnect.QuickConnectConfig.QuickConnectType.equals("PHONE_NUMBER")){
                                     def qcName = qc.QuickConnect.Name
                                     def qcDesc = qc.QuickConnect.Description
                                     def qcPhoneNumber = qc.QuickConnect.QuickConnectConfig.PhoneConfig.PhoneNumber
-                                    def qcConfig = '{"QuickConnectType":"PHONE_NUMBER","PhoneConfig":{"PhoneNumber":"${qcPhoneNumber}"}}'
+                                    String qcConfig = '{"QuickConnectType":"PHONE_NUMBER","PhoneConfig":{"PhoneNumber":"${qcPhoneNumber}"}}'
                                     qc = null
                                     def dq =  sh(script: "aws connect create-quick-connect --instance-id ${TRAGETINSTANCEARN} --name ${qcName} --description ${qcDesc} --quick-connect-config ${qcConfig}", returnStdout: true).trim()
                                     echo dq
@@ -199,7 +198,7 @@ pipeline {
                                     qc = null
                                     def targetFlowId = getFlowId (PRIMARYCFS, flowId, TARGETCFS)
                                     def targetUserId = getUserId (PRIMARYQUEUES, userId, TARGETQUEUES)
-                                    def qcConfig = '{"QuickConnectType":"USER","UserConfig":{"UserId":"${targetUserId}", "ContactFlowId": "${targetFlowId}" }}'
+                                    String qcConfig = '{"QuickConnectType":"USER","UserConfig":{"UserId":"${targetUserId}", "ContactFlowId": "${targetFlowId}" }}'
                                     def cu =  sh(script: "aws connect create-quick-connect --instance-id ${INSTANCEARN} --name ${qcName} --description ${qcDesc} --quick-connect-config ${qcConfig}", returnStdout: true).trim()
                                     echo cu
                                 }else{                                    
@@ -210,7 +209,7 @@ pipeline {
                                     qc = null
                                     def targetFlowId = getFlowId (PRIMARYCFS, flowId, TARGETCFS)
                                     def targetQueueId = getQueueId (PRIMARYQUEUES, queueId, TARGETQUEUES)
-                                    def qcConfig = '{"QuickConnectType":"QUEUE","QueueConfig":{"QueueId":"${targetQueueId}", "ContactFlowId": "${targetFlowId}" }}'
+                                    String qcConfig = '{"QuickConnectType":"QUEUE","QueueConfig":{"QueueId":"${targetQueueId}", "ContactFlowId": "${targetFlowId}" }}'
                                     def cq =  sh(script: "aws connect create-quick-connect --instance-id ${INSTANCEARN} --name ${qcName} --description ${qcDesc} --quick-connect-config ${qcConfig}", returnStdout: true).trim()
                                     echo cq
                                 }
