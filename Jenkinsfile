@@ -61,7 +61,7 @@ pipeline {
                             String qcType = obj.QuickConnectType
                             boolean qcFound = checkList(qcName, tl)
                             if(qcFound == false) {
-                                println "Missing # $arr -> QC $qcName of type : $qcType -> $qcId"                                                              
+                                println "Missing $qcName of type : $qcType -> $qcId"                                                              
                                 MISSINGQC = MISSINGQC.concat(qcId).concat(",")                                
                             }
                         }
