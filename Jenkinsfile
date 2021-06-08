@@ -17,6 +17,7 @@ def checkList(qcName, tl) {
         String qcName2 = obj2.Name
         if(qcName2.equals(qcName)) {
             qcFound = true
+            break
         }
     }
     return qcFound
@@ -27,17 +28,22 @@ def getFlowId (primary, flowId, target) {
     def tl = jsonParse(target)
     String fName = ""
     String rId = ""
+    println "Searching for flowId : $flowId"
     for(int i = 0; i < pl.ContactFlowSummaryList.size(); i++){
         def obj = pl.ContactFlowSummaryList[i]    
         if (obj.Id.equals(flowId)) {
             fName = obj.Name
+            println "Found flow name : $fName"
+            break
         }
     }
-            
+    println "Searching for flow name : $fName"        
     for(int i = 0; i < tl.ContactFlowSummaryList.size(); i++){
         def obj = tl.ContactFlowSummaryList[i]    
         if (obj.Name.equals(fName)) {
             rId = obj.Id
+            println "Found flow id : $rId"
+            break
         }
     }
     return rId
@@ -52,6 +58,7 @@ def getQueueId (primary, queueId, target) {
         def obj = pl.QueueSummaryList[i]    
         if (obj.Id.equals(queueId)) {
             fName = obj.Name
+            break
         }
     }
             
@@ -59,6 +66,7 @@ def getQueueId (primary, queueId, target) {
         def obj = tl.QueueSummaryList[i]    
         if (obj.Name.equals(fName)) {
             rId = obj.Id
+            break
         }
     }
     return rId
@@ -74,6 +82,7 @@ def getUserId (primary, userId, target) {
         def obj = pl.UserSummaryList[i]    
         if (obj.Id.equals(userId)) {
             fName = obj.Name
+            break
         }
     }
             
@@ -81,6 +90,7 @@ def getUserId (primary, userId, target) {
         def obj = tl.UserSummaryList[i]    
         if (obj.Username.equals(fName)) {
             rId = obj.Id
+            break
         }
     }
     return rId
