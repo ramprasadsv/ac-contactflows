@@ -83,14 +83,17 @@ pipeline {
                                 def di =  sh(script: "aws connect describe-quick-connect --instance-id ${INSTANCEARN} --quick-connect-id ${qcId}", returnStdout: true).trim()
                                 echo di
                                 def qc = jsonParse(di)
-                                echo qc
                                 String qcConfig=""
                                 if(qc.QuickConnect.QuickConnectConfig.QuickConnectType.equals("PHONE_NUMBER")){
                                     qcConfig = '"QuickConnectConfig":{"QuickConnectType":"PHONE_NUMBER","PhoneConfig":{"PhoneNumber":"${qc.QuickConnect.QuickConnectConfig.PhoneConfig.PhoneNumber"}}}'
                                 }else if(qc.QuickConnect.QuickConnectConfig.QuickConnectType.equals("USER")){
-                                    
+                                    //qcConfig = '"QuickConnectConfig":{"QuickConnectType":"USER","UserConfig":{"UserId":"${qc.QuickConnect.QuickConnectConfig.PhoneConfig.PhoneNumber"}}}'
                                 }else{
-                                    
+                                    //qcConfig = '"QuickConnectConfig":{"QuickConnectType":"QUEUE","QueueConfig":{"QueueId":"${qc.QuickConnect.QuickConnectConfig.PhoneConfig.PhoneNumber"}}}'
+                                    def dq =  sh(script: "aws connect describe-queue --instance-id ${INSTANCEARN} --queue-id ${qc.QuickConnect.QuickConnectConfig.QueueConfig.QueueId}", returnStdout: true).trim()
+                                    echo dq
+                                    def dc =  sh(script: "aws connect describe-contact-flow --instance-id ${INSTANCEARN} --contact-flow-id ${qc.QuickConnect.QuickConnectConfig.QueueConfig.ContactFlowId}", returnStdout: true).trim()
+                                    echo dc
                                 }
                                 echo qcConfig
                                 //def cq =  sh(script: "aws connect create-quick-connect --instance-id ${INSTANCEARN} --name ${qc.QuickConnect.Name} --description ${qc.QuickConnect.Description} --quick-connect-config ", returnStdout: true).trim()
