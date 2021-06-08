@@ -61,8 +61,10 @@ pipeline {
                             String qcType = obj.QuickConnectType
                             boolean qcFound = checkList(qcName, tl)
                             if(qcFound == false) {
-                               println "Missing flow $qcName of type : $qcType"                                                              
-                               MISSINGQC.put(qcId, qcName) 
+                                println "Missing flow $qcName of type : $qcType"                                                              
+                                //MISSINGQC.put(qcId, qcName) 
+                                def di =  sh(script: "aws connect describe-quick-connect --instance-id ${INSTANCEARN} --quick-connect-id ${qcId}", returnStdout: true).trim()
+                                echo di                                
                             }
                         }                        
                         echo MISSINGQC
