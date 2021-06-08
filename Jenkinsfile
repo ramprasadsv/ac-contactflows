@@ -11,7 +11,8 @@ def toJSON(def json) {
 def checkList(primaryList, targetList) {
     def pl = jsonParse(primaryList)
     def tl = jsonParse(targetList)
-    def map = [:]
+    //def map = [:]
+    Map<String,String> map =new HashMap()
     for(int j = 0; j < tl.QuickConnectSummaryList.size(); j++){
         def obj = pl.QuickConnectSummaryList[j]
         String qcName = obj.Name
@@ -27,7 +28,7 @@ def checkList(primaryList, targetList) {
         }
         if(qcFound == false){
            println "Not able to find : $qcId with Name -> $qcName"
-           def qc = qcType.concat("#").concat(qcName)
+           String qc = qcType.concat("#").concat(qcName)
            map.put(qcId, qc)
         }
     }
