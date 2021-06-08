@@ -66,7 +66,7 @@ pipeline {
                             boolean qcFound = checkList(qcName, tl)
                             if(qcFound == false) {
                                 println "Missing # $arr -> QC $qcName of type : $qcType -> $qcId"                                                              
-                                MISSINGQC.concat(qcId.toString()).concat(",")                                
+                                MISSINGQC = MISSINGQC.concat(qcId).concat(",")                                
                             }
                             echo MISSINGQC
                         }                        
