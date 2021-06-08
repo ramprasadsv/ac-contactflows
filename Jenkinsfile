@@ -85,7 +85,7 @@ def getUserId (primary, userId, target) {
     for(int i = 0; i < pl.UserSummaryList.size(); i++){
         def obj = pl.UserSummaryList[i]    
         if (obj.Id.equals(userId)) {
-            fName = obj.Name
+            fName = obj.Username
             println "Found user name : $fName"
             break
         }
