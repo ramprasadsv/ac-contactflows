@@ -59,7 +59,7 @@ def getQueueId (primary, queueId, target) {
         def obj = pl.QueueSummaryList[i]    
         if (obj.Id.equals(queueId)) {
             fName = obj.Name
-            println "Found flow name : $fName"
+            println "Found queue name : $fName"
             break
         }
     }
@@ -86,11 +86,11 @@ def getUserId (primary, userId, target) {
         def obj = pl.UserSummaryList[i]    
         if (obj.Id.equals(userId)) {
             fName = obj.Name
-            println "Found flow name : $fName"
+            println "Found user name : $fName"
             break
         }
     }
-            
+    println "Searching for userId for : $fName"        
     for(int i = 0; i < tl.UserSummaryList.size(); i++){
         def obj = tl.UserSummaryList[i]    
         if (obj.Username.equals(fName)) {
