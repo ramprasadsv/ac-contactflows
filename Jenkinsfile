@@ -209,7 +209,7 @@ pipeline {
                                     String targetFlowId = getFlowId (PRIMARYCFS, flowId, TARGETCFS)
                                     String targetUserId = getUserId (PRIMARYQUEUES, userId, TARGETQUEUES)
                                     String qcConfig = "QuickConnectType=USER,UserConfig={UserId=${targetQueueId},ContactFlowId=${targetFlowId}}"
-                                    def cu =  sh(script: "aws connect create-quick-connect --instance-id ${INSTANCEARN} --name ${qcName} --description ${qcDesc} --quick-connect-config ${qcConfig}", returnStdout: true).trim()
+                                    def cu =  sh(script: "aws connect create-quick-connect --instance-id ${TRAGETINSTANCEARN} --name ${qcName} --description ${qcDesc} --quick-connect-config ${qcConfig}", returnStdout: true).trim()
                                     echo cu
                                 }else{                                    
                                     String queueId = qc.QuickConnect.QuickConnectConfig.QueueConfig.QueueId
@@ -220,7 +220,7 @@ pipeline {
                                     String targetFlowId = getFlowId (PRIMARYCFS, flowId, TARGETCFS)
                                     String targetQueueId = getQueueId (PRIMARYQUEUES, queueId, TARGETQUEUES)
                                     String qcConfig = "QuickConnectType=QUEUE,QueueConfig=\\{QueueId=" + targetQueueId + ",ContactFlowId=" + targetFlowId +"\\}"                                    
-                                    def cq =  sh(script: "aws connect create-quick-connect --instance-id ${INSTANCEARN} --name ${qcName} --description ${qcDesc} --quick-connect-config ${qcConfig}" , returnStdout: true).trim()
+                                    def cq =  sh(script: "aws connect create-quick-connect --instance-id ${TRAGETINSTANCEARN} --name ${qcName} --description ${qcDesc} --quick-connect-config ${qcConfig}" , returnStdout: true).trim()
                                     echo cq
                                 }
                             }
