@@ -65,7 +65,7 @@ pipeline {
                             boolean qcFound = checkList(qcName, tl)
                             if(qcFound == false) {
                                 println "Missing flow $qcName of type : $qcType"                                                              
-                                map[arr] = qcId
+                                map[arr] = qcId.toString()
                                 arr++                                
                             }
                             echo arr
