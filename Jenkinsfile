@@ -54,10 +54,12 @@ def getQueueId (primary, queueId, target) {
     def tl = jsonParse(target)
     String fName = ""
     String rId = ""
+    println "Searching for queueId : $queueId"
     for(int i = 0; i < pl.QueueSummaryList.size(); i++){
         def obj = pl.QueueSummaryList[i]    
         if (obj.Id.equals(queueId)) {
             fName = obj.Name
+            println "Found flow name : $fName"
             break
         }
     }
@@ -66,6 +68,7 @@ def getQueueId (primary, queueId, target) {
         def obj = tl.QueueSummaryList[i]    
         if (obj.Name.equals(fName)) {
             rId = obj.Id
+            println "Found flow id : $rId"
             break
         }
     }
@@ -78,10 +81,12 @@ def getUserId (primary, userId, target) {
     def tl = jsonParse(target)
     String fName = ""
     String rId = ""
+    println "Searching for userId : $userId"
     for(int i = 0; i < pl.UserSummaryList.size(); i++){
         def obj = pl.UserSummaryList[i]    
         if (obj.Id.equals(userId)) {
             fName = obj.Name
+            println "Found flow name : $fName"
             break
         }
     }
@@ -90,6 +95,7 @@ def getUserId (primary, userId, target) {
         def obj = tl.UserSummaryList[i]    
         if (obj.Username.equals(fName)) {
             rId = obj.Id
+            println "Found flow id : $rId"
             break
         }
     }
