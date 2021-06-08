@@ -53,8 +53,11 @@ pipeline {
                         def pl = jsonParse(PRIMARYLIST)
                         def tl = jsonParse(TARGETLIST)
                         int listSize = pl.QuickConnectSummaryList.size() 
+                        def map = new String[listSize]
                         println "Primary list size $listSize"
+                        int arr=0
                         for(int i = 0; i < listSize; i++){
+                            
                             def obj = pl.QuickConnectSummaryList[i]
                             String qcName = obj.Name
                             String qcId = obj.Id
@@ -62,12 +65,12 @@ pipeline {
                             boolean qcFound = checkList(qcName, tl)
                             if(qcFound == false) {
                                 println "Missing flow $qcName of type : $qcType"                                                              
-                                //MISSINGQC.put(qcId, qcName) 
-                                def di =  sh(script: "aws connect describe-quick-connect --instance-id ${INSTANCEARN} --quick-connect-id ${qcId}", returnStdout: true).trim()
-                                echo di                                
+                                map[arr] = qcId
+                                arr++                                
                             }
+                            echo arr
                         }                        
-                        echo MISSINGQC
+                        
                     }
                 }
             }
