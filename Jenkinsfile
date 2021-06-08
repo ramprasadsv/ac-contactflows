@@ -50,7 +50,7 @@ def getQueueId (primary, queueId, target) {
     String rId = ""
     for(int i = 0; i < pl.QueueSummaryList.size(); i++){
         def obj = pl.QueueSummaryList[i]    
-        if (obj.Id.equals(flowId)) {
+        if (obj.Id.equals(queueId)) {
             fName = obj.Name
         }
     }
@@ -65,14 +65,14 @@ def getQueueId (primary, queueId, target) {
     
 }
 
-def getUserId (primary, queueId, target) {
+def getUserId (primary, userId, target) {
     def pl = jsonParse(primary)
     def tl = jsonParse(target)
     String fName = ""
     String rId = ""
     for(int i = 0; i < pl.UserSummaryList.size(); i++){
         def obj = pl.UserSummaryList[i]    
-        if (obj.Id.equals(flowId)) {
+        if (obj.Id.equals(userId)) {
             fName = obj.Name
         }
     }
