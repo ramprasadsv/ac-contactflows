@@ -21,7 +21,6 @@ def checkList(qcName, tl) {
 }
 
 
-
 def INSTANCEARN = "662de594-7bab-4713-952b-2b4cb16f2724"
 def FLOWID = "3b0db24a-c113-4847-8857-113c2c064131"
 //def MISSINGQC = [:]
@@ -54,11 +53,8 @@ pipeline {
                         def pl = jsonParse(PRIMARYLIST)
                         def tl = jsonParse(TARGETLIST)
                         int listSize = pl.QuickConnectSummaryList.size() 
-                        def map = new String[listSize]
                         println "Primary list size $listSize"
-                        int arr=0
                         for(int i = 0; i < listSize; i++){
-                            
                             def obj = pl.QuickConnectSummaryList[i]
                             String qcName = obj.Name
                             String qcId = obj.Id
@@ -68,9 +64,8 @@ pipeline {
                                 println "Missing # $arr -> QC $qcName of type : $qcType -> $qcId"                                                              
                                 MISSINGQC = MISSINGQC.concat(qcId).concat(",")                                
                             }
-                            echo MISSINGQC
-                        }                        
-                        
+                        }
+                        echo "Missing list -> ${MISSINGQC}"
                     }
                 }
             }
@@ -87,6 +82,17 @@ pipeline {
                             if(qcId.length() > 2){
                                 def di =  sh(script: "aws connect describe-quick-connect --instance-id ${INSTANCEARN} --quick-connect-id ${qcId}", returnStdout: true).trim()
                                 echo di
+                                def qc = toJSON(di)
+                                String qcConfig=""
+                                if(qc.QuickConnect.QuickConnectConfig.QuickConnectType.equals("PHONE_NUMBER")){
+                                    qcConfig = '"QuickConnectConfig":{"QuickConnectType":"PHONE_NUMBER","PhoneConfig":{"PhoneNumber":"${qc.QuickConnect.QuickConnectConfig.PhoneConfig.PhoneNumber"}}}'
+                                }else if(qc.QuickConnect.QuickConnectConfig.QuickConnectType.equals("USER")){
+                                    
+                                }else{
+                                    
+                                }
+                                echo qcConfig
+                                //def cq =  sh(script: "aws connect create-quick-connect --instance-id ${INSTANCEARN} --name ${qc.QuickConnect.Name} --description ${qc.QuickConnect.Description} --quick-connect-config ", returnStdout: true).trim()
                             }
                         }
                     }                
