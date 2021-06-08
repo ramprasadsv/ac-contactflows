@@ -144,7 +144,7 @@ pipeline {
                         TARGETQC =  sh(script: "aws connect list-quick-connects --instance-id ${TRAGETINSTANCEARN}", returnStdout: true).trim()
                         echo TARGETQC 
                         
-                        PRIMARYCFS =  sh(script: "aws connect list-contact-flows --instance-id ${TRAGETINSTANCEARN}", returnStdout: true).trim()
+                        PRIMARYCFS =  sh(script: "aws connect list-contact-flows --instance-id ${INSTANCEARN}", returnStdout: true).trim()
                         echo PRIMARYCFS
                         TARGETCFS =  sh(script: "aws connect list-contact-flows --instance-id ${TRAGETINSTANCEARN}", returnStdout: true).trim()
                         echo TARGETCFS
