@@ -90,6 +90,7 @@ pipeline {
                                     //qcConfig = '"QuickConnectConfig":{"QuickConnectType":"USER","UserConfig":{"UserId":"${qc.QuickConnect.QuickConnectConfig.PhoneConfig.PhoneNumber"}}}'
                                 }else{
                                     //qcConfig = '"QuickConnectConfig":{"QuickConnectType":"QUEUE","QueueConfig":{"QueueId":"${qc.QuickConnect.QuickConnectConfig.PhoneConfig.PhoneNumber"}}}'
+                                    qc = null
                                     def dq =  sh(script: "aws connect describe-queue --instance-id ${INSTANCEARN} --queue-id ${qc.QuickConnect.QuickConnectConfig.QueueConfig.QueueId}", returnStdout: true).trim()
                                     echo dq
                                     def dc =  sh(script: "aws connect describe-contact-flow --instance-id ${INSTANCEARN} --contact-flow-id ${qc.QuickConnect.QuickConnectConfig.QueueConfig.ContactFlowId}", returnStdout: true).trim()
