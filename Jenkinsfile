@@ -29,14 +29,14 @@ def getFlowId (primary, flowId, target) {
     String rId = ""
     for(int i = 0; i < pl.ContactFlowSummaryList.size(); i++){
         def obj = pl.ContactFlowSummaryList[i]    
-        if (obj.Id.equals(flowId) {
+        if (obj.Id.equals(flowId)) {
             fName = obj.Name
         }
     }
             
     for(int i = 0; i < tl.ContactFlowSummaryList.size(); i++){
         def obj = tl.ContactFlowSummaryList[i]    
-        if (obj.Name.equals(fName) {
+        if (obj.Name.equals(fName)) {
             rId = obj.Id
         }
     }
@@ -50,14 +50,14 @@ def getQueueId (primary, queueId, target) {
     String rId = ""
     for(int i = 0; i < pl.QueueSummaryList.size(); i++){
         def obj = pl.QueueSummaryList[i]    
-        if (obj.Id.equals(flowId) {
+        if (obj.Id.equals(flowId)) {
             fName = obj.Name
         }
     }
             
     for(int i = 0; i < tl.QueueSummaryList.size(); i++){
         def obj = tl.QueueSummaryList[i]    
-        if (obj.Name.equals(fName) {
+        if (obj.Name.equals(fName)) {
             rId = obj.Id
         }
     }
@@ -72,14 +72,14 @@ def getUserId (primary, queueId, target) {
     String rId = ""
     for(int i = 0; i < pl.UserSummaryList.size(); i++){
         def obj = pl.UserSummaryList[i]    
-        if (obj.Id.equals(flowId) {
+        if (obj.Id.equals(flowId)) {
             fName = obj.Name
         }
     }
             
     for(int i = 0; i < tl.UserSummaryList.size(); i++){
         def obj = tl.UserSummaryList[i]    
-        if (obj.Username.equals(fName) {
+        if (obj.Username.equals(fName)) {
             rId = obj.Id
         }
     }
