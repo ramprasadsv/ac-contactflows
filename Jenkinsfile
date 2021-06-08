@@ -78,13 +78,13 @@ pipeline {
         
         stage('Find Missing quick connects') {
             steps {
-                echo "Identify the flows quick connects "                
+                echo "Identify the quick connects "                
                 withAWS(credentials: '71b568ab-3ca8-4178-b03f-c112f0fd5030', region: 'us-east-1') {   
                     script {
                         def qcList = MISSINGQC.split(",")
                         for(int i = 0; i < qcList.size(); i++){
                             String qcId = qcList[i]
-                            if(qc.length() > 2){
+                            if(qcId.length() > 2){
                                 def di =  sh(script: "aws connect describe-quick-connect --instance-id ${INSTANCEARN} --quick-connect-id ${qcId}", returnStdout: true).trim()
                                 echo di
                             }
