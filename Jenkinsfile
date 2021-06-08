@@ -219,9 +219,9 @@ pipeline {
                                     qc = null
                                     String targetFlowId = getFlowId (PRIMARYCFS, flowId, TARGETCFS)
                                     String targetQueueId = getQueueId (PRIMARYQUEUES, queueId, TARGETQUEUES)
-                                    String qcConfig = "QuickConnectType=QUEUE,QueueConfig={QueueId=${targetQueueId},ContactFlowId=${targetFlowId}}"
+                                    String qcConfig = "QuickConnectType=QUEUE,QueueConfig={QueueId=" + targetQueueId + ",ContactFlowId=" + targetFlowId +"}"
                                     
-                                    def cq =  sh(script: "aws connect create-quick-connect --instance-id ${INSTANCEARN} --name ${qcName} --description ${qcDesc} --quick-connect-config {QuickConnectType=QUEUE,QueueConfig={QueueId=${targetQueueId},ContactFlowId=${targetFlowId}}", returnStdout: true).trim()
+                                    def cq =  sh(script: "aws connect create-quick-connect --instance-id ${INSTANCEARN} --name ${qcName} --description ${qcDesc} --quick-connect-config " + "QuickConnectType=QUEUE,QueueConfig={QueueId=" + targetQueueId + ",ContactFlowId=" + targetFlowId +"}" , returnStdout: true).trim()
                                     echo cq
                                 }
                             }
